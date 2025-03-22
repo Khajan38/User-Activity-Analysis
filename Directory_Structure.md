@@ -14,7 +14,7 @@ User-Activity-Analysis/
 │   │   └── sentiment_analysis.py                 # Performs sentiment analysis on emails
 │   ├── UI_Requirements/                          # Scripts related to UI integration (if applicable)
 │   │   ├── convert_to_notebook.py                # Converts scripts to Jupyter notebooks
-│   │   └── preprocessing.py                      # UI-specific preprocessing
+│   │   └── dashboard.py                          # Informative Dashboard for project
 │── LICENSE                                       # License details
 │── .gitignore                                    # Files to ignore in version control
 │── Directory_Structure.md                        # This file (project structure documentation)
