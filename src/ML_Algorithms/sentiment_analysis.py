@@ -12,19 +12,12 @@ mongo_client = pymongo.MongoClient("mongodb://localhost:27017/")
 db = mongo_client["User-Activity-Analysis"]
 collection = db[user_name]
 
-# Initialize VADER sentiment analyzer
 sia = SentimentIntensityAnalyzer()
-
-# Fetch emails that have not been analyzed yet
 emails = collection.find({"sentiment": {"$exists": False}})
 
 for email in emails:
-    text = email.get("body", "")  # Extract email body
-
-    # Get sentiment scores
+    text = email.get("body", "")
     sentiment_scores = sia.polarity_scores(text)
-
-    # Classify sentiment based on compound score
     compound_score = sentiment_scores['compound']
     if compound_score >= 0.05:
         sentiment_label = "positive"
@@ -32,8 +25,6 @@ for email in emails:
         sentiment_label = "negative"
     else:
         sentiment_label = "neutral"
-
-    # Update the email document with sentiment info
     collection.update_one(
         {"_id": email["_id"]},
         {"$set": {"sentiment": sentiment_label, "sentiment_scores": sentiment_scores}}

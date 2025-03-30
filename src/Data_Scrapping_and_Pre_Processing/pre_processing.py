@@ -8,9 +8,6 @@ from nltk.stem import WordNetLemmatizer
 from gmail_auth import get_authenticated_email, load_existing_token
 import concurrent.futures
 
-# Load spaCy NLP model for NER
-nlp = spacy.load("en_core_web_sm")
-
 # Authenticate Gmail API
 service = load_existing_token()
 user_email = get_authenticated_email(service)
@@ -25,20 +22,20 @@ collection = db[user_name]
 nlp = spacy.load("en_core_web_sm")
 stop_words = set(stopwords.words("english"))
 lemmatizer = WordNetLemmatizer()
-job_postings_set = set()  # Store unique job posting hashes
+job_postings_set = set()
 
 def preprocess_text(text):
     if not text: return "", []
 
     text = re.sub(r"https?://\S+", "", text)  # Remove URLs
     text = re.sub(r"<[^>]+>", "", text)  # Remove email addresses
+    text = re.sub(r"\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b", "", text)
     text = re.sub(r"[^\w\s]", "", text).strip()  # Remove special characters except spaces
 
     # Named Entity Recognition (NER) for company names & locations
     doc = nlp(text)
     entities_names = [ent.text for ent in doc.ents if ent.label_ in ["ORG", "GPE", "LOC"]]
-
-    text = text.lower()  # Convert to lowercase
+    text = text.lower()
 
     # Deduplication using MD5 hash
     text_hash = hashlib.md5(text.encode()).hexdigest()
@@ -77,7 +74,6 @@ def process_emails():
         body = email.get("body", "")
         sender = email.get("from", "")
 
-        # Preprocess subject & body
         pool = concurrent.futures.ThreadPoolExecutor(max_workers=3)
 
         future_subject = pool.submit(preprocess_text, subject)
@@ -90,7 +86,6 @@ def process_emails():
         pool.shutdown(wait=True)
         if processed_body == "": processed_body = processed_subject
 
-        # Update database with cleaned text and extracted entities
         collection.update_one(
             {"_id": email_id},
             {"$set": {

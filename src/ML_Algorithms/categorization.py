@@ -15,20 +15,17 @@ collection = db[user_name]
 # Load the trained model and vectorizer
 with open("../../dependencies/naive_bayes_model.pkl", "rb") as model_file:
     classifier = pickle.load(model_file)
-
 with open("../../dependencies/vectorizer.pkl", "rb") as vectorizer_file:
     vectorizer = pickle.load(vectorizer_file)
 
 def classify_emails():
-    emails = list(collection.find({"category": {"$exists": False}}))  # Fetch unclassified emails
+    emails = list(collection.find({"category": {"$exists": False}}))
+    print("Categorizing", len(emails), "emails...")
     for email in emails:
         email_id = email["_id"]
         text = email.get("subject", "") + " " + email.get("body", "")
-        # Convert text to vector
         text_vector = vectorizer.transform([text])
-        # Predict category
         predicted_category = classifier.predict(text_vector)[0]
-        # Update MongoDB with the predicted category
         collection.update_one(
             {"_id": email_id},
             {"$set": {"category": predicted_category}}
