@@ -6,7 +6,7 @@ import nltk
 from TF_IDF import TfidfVectorizer
 from sklearn.model_selection import train_test_split
 from Naive_Bayes_Classifier import MultinomialNB
-from sklearn.metrics import accuracy_score
+from src.UI_Requirements.model_dashboard import plotDataset, plotConfusionMatrix, plotROCCurve
 
 # Load NLP tools
 nlp = spacy.load("en_core_web_sm")
@@ -39,8 +39,12 @@ X_train, X_test, y_train, y_test = train_test_split(X_vectors.toarray(), y, test
 
 classifier = MultinomialNB()
 classifier.fit(X_train, y_train)
+plotDataset(y_train, "Training Dataset")
 y_pred = classifier.predict(X_test)
-accuracy = accuracy_score(y_test, y_pred)
+plotDataset(y_test, "Testing Dataset")
+accuracy = plotConfusionMatrix(y_test, y_pred)
+y_score = classifier.predict_proba()
+plotROCCurve(y_test, y_score, classifier.classMap)
 print(f"✅ Model Accuracy: {accuracy * 100:.2f}%")
 
 #Save model & vectorizer
