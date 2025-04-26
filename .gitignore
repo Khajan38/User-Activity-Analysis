@@ -1,46 +1,83 @@
-# Ignore virtual environment
+# === Python related ===
+# Ignore virtual environments
 .venv/
 venv/
 
-# Ignore Python cache files
+# Python cache files
 __pycache__/
 *.py[cod]
 *.so
 *.pyo
 *.pyd
 
-# Ignore Jupyter Notebook checkpoints
+# Compiled Python files
+*.pyc
+
+# Jupyter Notebook checkpoints
 .ipynb_checkpoints/
 
-# Ignore environment configuration files
+# Environment variables
 .env
 *.env
 
-# Ignore IDE and editor settings
-.idea/
+# === Node.js / React related ===
+# Dependency folders
+node_modules/
+
+# Production build
+build/
+dist/
+
+# Runtime data
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Local coverage reports
+coverage/
+
+# === Editor and IDE settings ===
+# VSCode
 .vscode/
+# IntelliJ / PyCharm / WebStorm
+.idea/
+
+# Swap files
 *.swp
 *.swo
 
-# Ignore logs and temporary files
+# === System files ===
+.DS_Store
+Thumbs.db
+
+# === Miscellaneous ===
+# Log files
 *.log
+
+# Backup and temporary files
 *.tmp
 *.bak
 
-# Ignore compiled files and build artifacts
-*.out
-*.o
-*.a
-*.class
-*.jar
-*.pyc
-
-# Ignore dependency and package management
-node_modules/
-dist/
-build/
+# Data folders (optional — if you store temporary datasets)
 data/
 
-# Ignore system files
-.DS_Store
-Thumbs.db
+# Parcel-bundler cache (only if you ever use it)
+.cache/
+.parcel-cache/
+
+# Storybook build
+.out/
+
+# SASS transpiled css maps
+*.css.map
+*.sass.map
+
+# Coverage reports
+coverage/
+
+# Local environment settings
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
