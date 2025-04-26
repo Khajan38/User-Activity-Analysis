@@ -4,11 +4,14 @@ User-Activity-Analysis/
 │── notebooks/                                    # Jupyter notebooks for exploration & experiments
 │── dependencies/                                 # External dependencies or environment setup files
 │── src/                                          # Core Python scripts
-│   ├── Data_Scraping_and_Preprocessing/         # Email fetching and preprocessing scripts
+│   ├── Data_Scraping_and_Preprocessing/          # Email fetching and preprocessing scripts
 │   │   ├── gmail_auth.py                         # Handles Gmail API authentication
 │   │   ├── fetch_emails.py                       # Fetches emails from Gmail API
 │   │   └── pre_processing.py                     # Cleans and prepares email data
-│   ├── ML_Algorithms/                            # Machine learning models for classification & analysis
+│   ├── ML_Algorithms/                            # Machine learning Algorithms (Self-Implemented)
+│   │   ├── Implemented_Algos                     # Handles Gmail API authentication
+│   │   │   ├── Naive_Bayes_Classifier.py         # Naive Bayes Classifier Algorithm
+│   │   │   └── TF-IDF.py                         # TF-IDF Vectorization Algorithm
 │   │   ├── train_classifiers.py                  # Naive Bayes Classifier Model
 │   │   ├── categorization.py                     # Classifies emails into categories
 │   │   └── sentiment_analysis.py                 # Performs sentiment analysis on emails

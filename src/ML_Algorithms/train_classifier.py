@@ -3,9 +3,9 @@ import pickle
 import re
 import spacy
 import nltk
-from TF_IDF import TfidfVectorizer
+from Implemented_Algos.TF_IDF import TfidfVectorizer
 from sklearn.model_selection import train_test_split
-from Naive_Bayes_Classifier import MultinomialNB
+from src.ML_Algorithms.Implemented_Algos.Naive_Bayes_Classifier import MultinomialNB
 from src.UI_Requirements.model_dashboard import plotDataset, plotConfusionMatrix, plotROCCurve
 
 # Load NLP tools

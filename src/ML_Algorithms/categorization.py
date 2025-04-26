@@ -24,7 +24,7 @@ def classify_emails():
     for email in emails:
         email_id = email["_id"]
         text = email.get("subject", "") + " " + email.get("body", "")
-        text_vector = vectorizer.transform([text])
+        text_vector = vectorizer.transform([text]).toarray()
         predicted_category = classifier.predict(text_vector)[0]
         collection.update_one(
             {"_id": email_id},
