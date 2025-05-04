@@ -5,24 +5,40 @@ import pymongo
 from nltk.tokenize import word_tokenize
 from nltk.corpus import stopwords
 from nltk.stem import WordNetLemmatizer
-from gmail_auth import get_authenticated_email, load_existing_token
-import concurrent.futures
 
-# Authenticate Gmail API
-service = load_existing_token()
-user_email = get_authenticated_email(service)
-user_name = user_email.split("@")[0]
+if __name__ == "__main__":
+    from gmail_auth import get_authenticated_email, load_existing_token
+    import concurrent.futures
 
-# Connect to MongoDB
-mongo_client = pymongo.MongoClient("mongodb://localhost:27017/")
-db = mongo_client["User-Activity-Analysis"]
-collection = db[user_name]
+    # Authenticate Gmail API
+    service = load_existing_token()
+    user_email = get_authenticated_email(service)
+    user_name = user_email.split("@")[0]
+
+    # Connect to MongoDB
+    mongo_client = pymongo.MongoClient("mongodb://localhost:27017/")
+    db = mongo_client["User-Activity-Analysis"]
+    collection = db[user_name]
 
 # Load NLP model
 nlp = spacy.load("en_core_web_sm")
 stop_words = set(stopwords.words("english"))
 lemmatizer = WordNetLemmatizer()
 job_postings_set = set()
+
+#Pre-processing for data-frame emails
+def preprocess_dataFrame(text):
+    if not text:
+        return ""
+    text = re.sub(r"https?://\S+", "", text)
+    text = text.lower()
+    text = re.sub(r"[^\w\s]", "", text).strip()
+    words = [
+        lemmatizer.lemmatize(word)
+        for word in word_tokenize(text)
+        if word not in stop_words
+    ]
+    return " ".join(words)
 
 def preprocess_text(text):
     if not text: return "", []
@@ -34,7 +50,7 @@ def preprocess_text(text):
 
     # Named Entity Recognition (NER) for company names & locations
     doc = nlp(text)
-    entities_names = [ent.text for ent in doc.ents if ent.label_ in ["ORG", "GPE", "LOC"]]
+    entities_names = [ent.text for ent in doc.ents if ent.label_ in ["ORG", "GPE", "LOC", "PERSON"]]
     text = text.lower()
 
     # Deduplication using MD5 hash
@@ -76,12 +92,12 @@ def process_emails():
 
         pool = concurrent.futures.ThreadPoolExecutor(max_workers=3)
 
-        future_subject = pool.submit(preprocess_text, subject)
-        processed_subject, subject_entities = future_subject.result()
-        future_subject = pool.submit(preprocess_text, body)
-        processed_body, body_entities = future_subject.result()
-        future_subject = pool.submit(preprocess_sender, sender)
-        processed_sender = future_subject.result()
+        f1 = pool.submit(preprocess_text, subject)
+        f2 = pool.submit(preprocess_text, body)
+        f3 = pool.submit(preprocess_sender, sender)
+        processed_subject, subject_entities = f1.result()
+        processed_body, body_entities = f2.result()
+        processed_sender = f3.result()
 
         pool.shutdown(wait=True)
         if processed_body == "": processed_body = processed_subject

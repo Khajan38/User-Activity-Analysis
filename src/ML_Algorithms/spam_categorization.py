@@ -13,9 +13,9 @@ db = mongo_client["User-Activity-Analysis"]
 collection = db[user_name]
 
 # Load the trained model and vectorizer
-with open("../../dependencies/naive_bayes_model.pkl", "rb") as model_file:
+with open("../../dependencies/spam_NB.pkl", "rb") as model_file:
     classifier = pickle.load(model_file)
-with open("../../dependencies/vectorizer.pkl", "rb") as vectorizer_file:
+with open("../../dependencies/spam_vectorizer.pkl", "rb") as vectorizer_file:
     vectorizer = pickle.load(vectorizer_file)
 
 def classify_emails():

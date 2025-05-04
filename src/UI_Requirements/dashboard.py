@@ -3,7 +3,6 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
 import ipywidgets as widgets
-from wordcloud import WordCloud
 from IPython.display import display
 from src.Data_Scrapping_and_Pre_Processing.gmail_auth import get_authenticated_email, load_existing_token
 from model_dashboard import plotDataset
