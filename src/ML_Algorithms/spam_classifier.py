@@ -12,12 +12,12 @@ if "text" not in df.columns or "category" not in df.columns:
 
 df["processed_text"] = df["text"].apply(preprocess_dataFrame)
 y = df["category"]
-vectorizer = TfidfVectorizer()
+vectorizer = TfidfVectorizer(0.9, 2)
 X_vectors = vectorizer.compute_TF_IDF(df, "processed_text")
 
 X_train, X_test, y_train, y_test = train_test_split(X_vectors.toarray(), y, test_size=0.2, random_state=42)
 
-best_thresholds = {"ham":0.15, "spam":0.82}
+best_thresholds = {"ham":0.22, "spam":0.78}
 classifier = MultinomialNB(best_thresholds)
 classifier.fit(X_train, y_train)
 plotDataset(y_train, "Training Dataset")

@@ -1,0 +1,95 @@
+.day-view {
+  display: flex;
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  margin-top: 10px;
+  overflow: hidden;
+}
+
+.time-column {
+  width: 80px;
+  border-right: 1px solid #eee;
+}
+
+.time-slot {
+  height: 60px;
+  border-bottom: 1px solid #eee;
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-end;
+  padding: 4px 8px;
+  font-size: 12px;
+  color: #666;
+}
+
+.schedule-column {
+  flex: 1;
+  position: relative;
+  overflow: visible;
+}
+
+.schedule-slot {
+  height: 60px;
+  border-bottom: 1px solid #eee;
+  position: relative;
+  cursor: pointer;
+  overflow: visible;
+}
+
+.meeting-item {
+  position: absolute;
+  padding: 8px;
+  left: 6px;
+  right: 6px;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, filter 0.2s ease;
+  border-radius: 6px;
+}
+
+.meeting-item:hover {
+  z-index: 10;
+  transform: scale(1.05);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  filter: brightness(1.15);
+}
+
+.meeting-item.blue {
+  background-color: #4285f4;
+}
+
+.meeting-item.green {
+  background-color: #0f9d58;
+}
+
+.meeting-item.purple {
+  background-color: #a142f4;
+}
+
+.meeting-item.red {
+  background-color: #ef4444;
+}
+
+.meeting-item.orange {
+  background-color: #f59e0b;
+}
+
+.meeting-title {
+  color: white;
+  font-weight: 500;
+  font-size: 14px;
+  margin-bottom: 4px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+
+.meeting-time {
+  color: white;
+  font-size: 12px;
+  opacity: 0.8;
+  font-size: 0.75rem;
+  opacity: 0.9;
+  margin-bottom: 0.25rem;
+}

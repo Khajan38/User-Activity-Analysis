@@ -1,8 +1,8 @@
 import pymongo
 import pandas as pd
-import matplotlib.pyplot as plt
 import seaborn as sns
 import ipywidgets as widgets
+import matplotlib.pyplot as plt
 from IPython.display import display
 from src.Data_Scrapping_and_Pre_Processing.gmail_auth import get_authenticated_email, load_existing_token
 from model_dashboard import plotDataset
@@ -13,11 +13,12 @@ user_email = get_authenticated_email(service)
 user_name = user_email.split("@")[0]
 
 # Connect to MongoDB
-mongo_client = pymongo.MongoClient("mongodb://localhost:27017/")
+mongo_client = pymongo.MongoClient("mongodb+srv://khajan_bhatt:Tanuj%4024042005@khajan38.9iqi4n1.mongodb.net/")
 db = mongo_client["User-Activity-Analysis"]
 collection = db[user_name]
-emails = pd.DataFrame(list(collection.find({}, {"_id": 0, "from": 1, "category": 1, "Entities_names": 1, "sentiment": 1})))
-emails['category'] = emails['category'].fillna('Unknown')
+emails = pd.DataFrame(list(collection.find({}, {"_id": 0, "from": 1, "spam_category": 1,  "meeting_category": 1, "sentiment": 1})))
+emails['spam_category'] = emails['spam_category'].fillna('Unknown')
+emails['meeting_category'] = emails['meeting_category'].fillna('Unknown')
 emails['sentiment'] = emails['sentiment'].fillna('Neutral')
 total_emails = len(emails)
 
@@ -42,11 +43,20 @@ def plot_sentiment_distribution():
 
 # 🚀 Display Dashboard
 print(f"📩 Total Emails Fetched: {total_emails}")
+if 'spam_category' in emails.columns:
+    display(widgets.Label("📊 Email Distribution: Spam Category"))
+    plotDataset(emails["spam_category"], user_name)
+else:
+    print("⚠️ 'spam_category' column missing.")
 
-display(widgets.Label("📊 Email Distribution by Category:"))
-plotDataset(emails["category"], user_name)
+if 'meeting_category' in emails.columns:
+    display(widgets.Label("📊 Email Distribution: Meeting Category"))
+    plotDataset(emails["meeting_category"], user_name)
+else:
+    print("⚠️ 'meeting_category' column missing.")
 
 display(widgets.Label("📬 Top 10 Email Senders:"))
+
 plot_top_senders()
 
 display(widgets.Label("📈 Sentiment Analysis of Emails:"))

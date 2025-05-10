@@ -1,5 +1,5 @@
-import pandas as pd
 import pickle
+import pandas as pd
 from Implemented_Algos.TF_IDF import TfidfVectorizer
 from sklearn.model_selection import train_test_split
 from src.ML_Algorithms.Implemented_Algos.Naive_Bayes_Classifier import MultinomialNB
@@ -12,12 +12,12 @@ if "text" not in df.columns or "category" not in df.columns:
 
 df["processed_text"] = df["text"].apply(preprocess_dataFrame)
 y = df["category"]
-vectorizer = TfidfVectorizer()
+vectorizer = TfidfVectorizer(0.9, 2)
 X_vectors = vectorizer.compute_TF_IDF(df, "processed_text")
 
 X_train, X_test, y_train, y_test = train_test_split(X_vectors.toarray(), y, test_size=0.2, random_state=42)
 
-best_thresholds = {"meeting":0.92, "non-meeting":0.07}
+best_thresholds = {"meeting":0.83, "non-meeting":0.09}
 classifier = MultinomialNB(best_thresholds)
 classifier.fit(X_train, y_train)
 plotDataset(y_train, "Training Dataset")

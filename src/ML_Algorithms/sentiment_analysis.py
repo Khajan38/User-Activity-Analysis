@@ -1,6 +1,20 @@
-from nltk.sentiment import SentimentIntensityAnalyzer
+import os
+import nltk
 import pymongo
+from pathlib import Path
+from nltk.sentiment import SentimentIntensityAnalyzer
 from src.Data_Scrapping_and_Pre_Processing.gmail_auth import get_authenticated_email, load_existing_token
+
+ROOT_DIR = Path(__file__).resolve().parent.parent.parent
+nltk_data_path = ROOT_DIR / "dependencies" / "nltk_data"
+if not os.path.exists(nltk_data_path): os.makedirs(nltk_data_path)
+os.environ['NLTK_DATA'] = str(nltk_data_path)
+nltk.data.path.clear()
+nltk.data.path.append(str(nltk_data_path))
+print(nltk.data.path)
+
+# Download NLTK resources (Uncomment the first time you run the program)
+# nltk.download('vader_lexicon', download_dir=nltk_data_path)
 
 # Authenticate Gmail API
 service = load_existing_token()
@@ -8,7 +22,7 @@ user_email = get_authenticated_email(service)
 user_name = user_email.split("@")[0]
 
 # Connect to MongoDB
-mongo_client = pymongo.MongoClient("mongodb://localhost:27017/")
+mongo_client = pymongo.MongoClient("mongodb+srv://khajan_bhatt:Tanuj%4024042005@khajan38.9iqi4n1.mongodb.net/")
 db = mongo_client["User-Activity-Analysis"]
 collection = db[user_name]
 

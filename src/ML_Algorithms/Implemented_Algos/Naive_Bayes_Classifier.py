@@ -1,10 +1,5 @@
 import math
 import numpy as np
-import pandas as pd
-from keras.src.ops import threshold
-from pymongo.synchronous.pool import PoolState
-
-from src.ML_Algorithms.Implemented_Algos.TF_IDF import TfidfVectorizer
 
 #Multinomial Naive Bayes (Multinomial NB) is a probabilistic classifier based on Bayes’ Theorem. It is particularly suited for discrete features like word counts, frequencies, or TF-IDF values in text classification problems.
 

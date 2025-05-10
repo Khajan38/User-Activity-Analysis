@@ -1,10 +1,10 @@
 import pandas as pd
 import random
 
-meeting_emails = [ #1000
-    "The quarterly review meeting is scheduled for 9 AM Monday. Please be on time.",
-    "Meeting scheduled for 2 PM. Don’t forget to bring the financial report.",
-    "We are organizing a lunch meeting at 12 PM tomorrow. See you there."
+meeting_emails = [
+    "hello well discussing system performance backend refactor plan time 5:00 pm ist date wednesday may 8th google meet best tanuj system architect",
+    "team meeting quarterly review budget discussion time 10:30 am est date friday may 10th zoom link regards sarah financial director",
+    "invitation product roadmap planning session time 2:00 pm pst date monday may 13th microsoft teams thanks david product manager",
 ]
 
 non_meeting_emails = [ #740
@@ -22,4 +22,4 @@ random.shuffle(data)
 df = pd.DataFrame(data)
 csv_file_path = '../../../dependencies/meetings_dataset.csv'
 df.to_csv(csv_file_path, mode='a', header=not pd.io.common.file_exists(csv_file_path), index=False)
-print(f"CSV file created with {len(meeting_emails) + len(non_meeting_emails)} entries!")
+print(f"CSV file appended with {len(meeting_emails) + len(non_meeting_emails)} entries!")

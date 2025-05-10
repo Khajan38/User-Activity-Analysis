@@ -9,9 +9,11 @@ __pycache__/
 *.so
 *.pyo
 *.pyd
+*.env
 
 # Compiled Python files
 *.pyc
+*.pkl
 
 # Jupyter Notebook checkpoints
 .ipynb_checkpoints/
@@ -23,6 +25,7 @@ __pycache__/
 # === Node.js / React related ===
 # Dependency folders
 node_modules/
+dependencies/nltk_data/
 
 # Production build
 build/

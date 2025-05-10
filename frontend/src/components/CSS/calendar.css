@@ -1,0 +1,93 @@
+@import url('https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap');
+
+.calendar-app {
+  padding: 0px;
+  display: flex;
+}
+
+.main-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* Header Styles */
+.cal_header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px;
+  background-color: white;
+}
+
+.cal_header-left {
+  display: flex;
+  align-items: center;
+}
+
+.header-button {
+  margin-right: 16px;
+  padding: 8px 16px;
+  font-size: 14px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  background-color: white;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  outline: none;
+}
+
+.header-button:hover {
+  background-color: #f8f8f8;
+}
+
+.nav-button {
+  font-family:'Great Vibes', cursive;
+  width: 32px;
+  height: 32px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  border-radius: 50%;
+  background-color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  font-size: 28px;
+  font-weight: bold;
+}
+
+.nav-button:hover {
+  background-color: #f0f0f0;
+}
+
+.cal_header-title {
+  font-family:'Great Vibes', cursive;
+  margin-left: 16px;
+  margin-right: 16px;
+  font-size: 22px;
+  font-weight: bold;
+}
+
+.create-button {
+  padding: 8px 16px;
+  background-color: #1a73e8;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background-color 0.2s;
+}
+
+.create-button:hover {
+  background-color: #1765cc;
+}
+
+/* Calendar Container */
+.calendar-container {
+  flex: 1;
+  overflow: auto;
+}

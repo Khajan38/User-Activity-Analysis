@@ -8,7 +8,7 @@ user_email = get_authenticated_email(service)
 user_name = user_email.split("@")[0]
 
 # Connect to MongoDB
-mongo_client = pymongo.MongoClient("mongodb://localhost:27017/")
+mongo_client = pymongo.MongoClient("mongodb+srv://khajan_bhatt:Tanuj%4024042005@khajan38.9iqi4n1.mongodb.net/")
 db = mongo_client["User-Activity-Analysis"]
 collection = db[user_name]
 
@@ -19,7 +19,7 @@ with open("../../dependencies/spam_vectorizer.pkl", "rb") as vectorizer_file:
     vectorizer = pickle.load(vectorizer_file)
 
 def classify_emails():
-    emails = list(collection.find({"category": {"$exists": False}}))
+    emails = list(collection.find({"spam_category": {"$exists": False}}))
     print("Categorizing", len(emails), "emails...")
     for email in emails:
         email_id = email["_id"]
@@ -28,7 +28,7 @@ def classify_emails():
         predicted_category = classifier.predict(text_vector)[0]
         collection.update_one(
             {"_id": email_id},
-            {"$set": {"category": predicted_category}}
+            {"$set": {"spam_category": predicted_category}}
         )
     print("✅ Email classification complete! Data updated in MongoDB.")
 

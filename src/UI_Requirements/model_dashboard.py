@@ -95,3 +95,17 @@ def plotProbabilitiesWithThresholds(y_test, y_pred, y_score, columnMap, best_thr
     plt.grid(True)
     plt.tight_layout()
     plt.show()
+
+def plot_meeting_scores(y_scores, threshold):
+    email_ids = list(y_scores.keys())
+    probabilities = list(y_scores.values())
+    plt.figure(figsize=(10, 5))
+    plt.scatter(range(len(email_ids)), probabilities, c='blue', alpha=0.6)
+    plt.axhline(y=threshold, color='red', linestyle='--', label=f'Threshold = {threshold}')
+    plt.title("\"Meeting\" Class Probability Scores for Non-Meeting Emails")
+    plt.xlabel("Email Index")
+    plt.ylabel("Probability of Being a Meeting")
+    plt.legend()
+    plt.grid(True)
+    plt.tight_layout()
+    plt.show()
