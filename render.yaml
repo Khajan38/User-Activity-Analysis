@@ -1,0 +1,11 @@
+services:
+  - type: web
+    name: cognitick-api
+    env: python
+    plan: free
+    branch: main
+    buildCommand: cd backend && pip install -r requirements.txt
+    startCommand: cd backend && python app.py
+    envVars:
+      - key: MONGO_URI
+        value: mongodb+srv://khajan_bhatt:Tanuj%4024042005@khajan38.9iqi4n1.mongodb.net/

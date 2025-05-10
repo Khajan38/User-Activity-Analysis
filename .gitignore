@@ -9,7 +9,6 @@ __pycache__/
 *.so
 *.pyo
 *.pyd
-*.env
 
 # Compiled Python files
 *.pyc
@@ -24,8 +23,8 @@ __pycache__/
 
 # === Node.js / React related ===
 # Dependency folders
+/dependencies/nltk_data/
 node_modules/
-dependencies/nltk_data/
 
 # Production build
 build/

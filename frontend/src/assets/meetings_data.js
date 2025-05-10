@@ -7,7 +7,7 @@ const MeetingsList = ({ setGlobalMeetings }) => {
   useEffect(() => {
     const fetchMeetings = async () => {
       try {
-        const response = await axios.get("http://192.168.29.86:5000/api/meetings");
+        const response = await axios.get("http://127.0.0.1:5000/api/meetings");
         // Format meetings data according to required structure
         const formattedMeetings = response.data.map((meeting) => ({
           id: meeting.id || 0,
