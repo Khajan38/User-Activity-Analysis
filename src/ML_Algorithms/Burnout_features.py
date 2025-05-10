@@ -46,5 +46,3 @@ class Burnout_Features :
         for email in self.emails:
             if email["date-time"] > cur_time : email_count += 1
         return email_count
-
-    def urgent_emails(self):

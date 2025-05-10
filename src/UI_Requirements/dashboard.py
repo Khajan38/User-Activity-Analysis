@@ -1,7 +1,9 @@
+import os
 import pymongo
 import pandas as pd
 import seaborn as sns
 import ipywidgets as widgets
+from dotenv import load_dotenv
 import matplotlib.pyplot as plt
 from IPython.display import display
 from src.Data_Scrapping_and_Pre_Processing.gmail_auth import get_authenticated_email, load_existing_token
@@ -13,9 +15,12 @@ user_email = get_authenticated_email(service)
 user_name = user_email.split("@")[0]
 
 # Connect to MongoDB
-mongo_client = pymongo.MongoClient("mongodb+srv://khajan_bhatt:Tanuj%4024042005@khajan38.9iqi4n1.mongodb.net/")
+load_dotenv()
+mongo_uri = os.getenv("MONGO_URI")
+mongo_client = pymongo.MongoClient(mongo_uri)
 db = mongo_client["User-Activity-Analysis"]
 collection = db[user_name]
+
 emails = pd.DataFrame(list(collection.find({}, {"_id": 0, "from": 1, "spam_category": 1,  "meeting_category": 1, "sentiment": 1})))
 emails['spam_category'] = emails['spam_category'].fillna('Unknown')
 emails['meeting_category'] = emails['meeting_category'].fillna('Unknown')

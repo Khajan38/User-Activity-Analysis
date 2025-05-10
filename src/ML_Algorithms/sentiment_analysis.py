@@ -2,6 +2,7 @@ import os
 import nltk
 import pymongo
 from pathlib import Path
+from dotenv import load_dotenv
 from nltk.sentiment import SentimentIntensityAnalyzer
 from src.Data_Scrapping_and_Pre_Processing.gmail_auth import get_authenticated_email, load_existing_token
 
@@ -22,7 +23,9 @@ user_email = get_authenticated_email(service)
 user_name = user_email.split("@")[0]
 
 # Connect to MongoDB
-mongo_client = pymongo.MongoClient("mongodb+srv://khajan_bhatt:Tanuj%4024042005@khajan38.9iqi4n1.mongodb.net/")
+load_dotenv()
+mongo_uri = os.getenv("MONGO_URI")
+mongo_client = pymongo.MongoClient(mongo_uri)
 db = mongo_client["User-Activity-Analysis"]
 collection = db[user_name]
 

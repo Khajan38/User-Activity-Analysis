@@ -5,8 +5,9 @@ import spacy
 import pymongo
 import hashlib
 from pathlib import Path
-from bs4 import BeautifulSoup
 from datetime import datetime
+from bs4 import BeautifulSoup
+from dotenv import load_dotenv
 from functools import lru_cache
 
 #NLTK Environment Setup
@@ -39,7 +40,9 @@ if __name__ == "__main__":
     user_name = user_email.split("@")[0]
 
     # Connect to MongoDB
-    mongo_client = pymongo.MongoClient("mongodb+srv://khajan_bhatt:Tanuj%4024042005@khajan38.9iqi4n1.mongodb.net/")
+    load_dotenv()
+    mongo_uri = os.getenv("MONGO_URI")
+    mongo_client = pymongo.MongoClient(mongo_uri)
     db = mongo_client["User-Activity-Analysis"]
     collection = db[user_name]
 
