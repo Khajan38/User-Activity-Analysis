@@ -1,36 +1,41 @@
-import os
-import pymongo
-from flask import Blueprint
+from bson import ObjectId
 from datetime import timedelta
-from dotenv import load_dotenv
 from bson.json_util import dumps
+from src.user_context import user_context
+from flask import Blueprint, request, jsonify
 
 meetings_bp = Blueprint('meetings', __name__)
 meetings = []
 
 def setMeetings():
     global meetings
-    user_name = "tanujbhatt8279"
-    load_dotenv()
-    mongo_uri = os.getenv("MONGO_URI")
-    mongo_client = pymongo.MongoClient(mongo_uri)
-    db = mongo_client["User-Activity-Analysis"]
-    collection = db["Meetings_" + user_name]
-    meetings = list(collection.find())
-    for i, meeting in enumerate(meetings):
-        original_date = meeting.get("date-time")
-        del meeting["date-time"]
-        del meeting["_id"]
-        meeting["id"] = i
-        if original_date:
-            meeting['date'] = original_date.date().isoformat()
-            start_time = original_date.time().replace(microsecond=0).strftime('%H:%M')
-            meeting['startTime'] = start_time
-            end_time_object = (original_date + timedelta(hours=1)).time().replace(microsecond=0)
-            meeting['endTime'] = end_time_object.strftime('%H:%M')
+    meetings.clear()
+    collections = [user_context['collectionM'], user_context['collectionC']]
+    for collection in collections:
+        for meeting in collection.find():
+            original_date = meeting.get("date-time")
+            meeting.pop("date-time", None)
+            start_exists = "startTime" in meeting
+            end_exists = "endTime" in meeting
+            meeting["_id"] = str(meeting["_id"])
+            if original_date and not start_exists and not end_exists:
+                meeting['date'] = original_date.date().isoformat()
+                meeting['startTime'] = original_date.time().replace(microsecond=0).strftime('%H:%M')
+                meeting['endTime'] = (original_date + timedelta(hours=1)).time().replace(microsecond=0).strftime(
+                    '%H:%M')
+            meetings.append(meeting)
 
 @meetings_bp.route('/meetings', methods=['GET'])
 def get_meetings():
     global meetings
     if not meetings: setMeetings()
     return dumps(meetings)
+
+@meetings_bp.route("/meetings", methods=["POST"])
+def save_meeting():
+    collection = user_context['collectionC']
+    data = request.get_json()
+    data["_id"] = ObjectId(data["id"])
+    del data["id"]
+    collection.insert_one(data)
+    return jsonify({"message": "Meeting saved"}), 201

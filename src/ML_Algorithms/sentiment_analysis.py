@@ -14,9 +14,6 @@ nltk.data.path.clear()
 nltk.data.path.append(str(nltk_data_path))
 print(nltk.data.path)
 
-# Download NLTK resources (Uncomment the first time you run the program)
-# nltk.download('vader_lexicon', download_dir=nltk_data_path)
-
 # Authenticate Gmail API
 service = load_existing_token()
 user_email = get_authenticated_email(service)

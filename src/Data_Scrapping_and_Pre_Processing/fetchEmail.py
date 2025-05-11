@@ -5,7 +5,7 @@ import pymongo
 import datetime
 from bs4 import BeautifulSoup
 from dotenv import load_dotenv
-from gmail_auth import get_authenticated_email, load_existing_token
+from src.Data_Scrapping_and_Pre_Processing.gmail_auth import get_authenticated_email, load_existing_token
 
 # Authenticate Gmail API
 service = load_existing_token()
