@@ -1,16 +1,32 @@
+#Root Directory in System Path
+import sys, os
+root_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '../'))
+if root_path not in sys.path:
+    sys.path.append(root_path)
+
 from bson import ObjectId
 from datetime import timedelta
 from bson.json_util import dumps
-from src.user_context import user_context
 from flask import Blueprint, request, jsonify
 
+username = None
 meetings_bp = Blueprint('meetings', __name__)
 meetings = []
 
 def setMeetings():
     global meetings
     meetings.clear()
-    collections = [user_context['collectionM'], user_context['collectionC']]
+    from src.user_context_manager import load_user_context
+    user_context = load_user_context()
+    #SetUp MongoDBy
+    from dotenv import load_dotenv
+    import pymongo
+    load_dotenv()
+    mongo_uri = os.getenv("MONGO_URI")
+    if not mongo_uri: raise ValueError("MONGO_URI not set in environment variables")
+    mongo_client = pymongo.MongoClient(mongo_uri)
+    db = mongo_client["User-Activity-Analysis"]
+    collections = [db[user_context['collectionM']], db[user_context['collectionC']]]
     for collection in collections:
         for meeting in collection.find():
             original_date = meeting.get("date-time")
@@ -27,12 +43,18 @@ def setMeetings():
 
 @meetings_bp.route('/meetings', methods=['GET'])
 def get_meetings():
-    global meetings
-    if not meetings: setMeetings()
+    from src.user_context_manager import load_user_context
+    user_context = load_user_context()
+    global meetings, username
+    if not meetings or username != user_context['user_name']:
+        setMeetings()
+        username = user_context['user_name']
     return dumps(meetings)
 
 @meetings_bp.route("/meetings", methods=["POST"])
 def save_meeting():
+    from src.user_context_manager import load_user_context
+    user_context = load_user_context()
     collection = user_context['collectionC']
     data = request.get_json()
     data["_id"] = ObjectId(data["id"])

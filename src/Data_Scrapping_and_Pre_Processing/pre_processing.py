@@ -4,10 +4,10 @@ import nltk
 import spacy
 import pymongo
 import hashlib
+import concurrent
 from pathlib import Path
 from datetime import datetime
 from bs4 import BeautifulSoup
-from dotenv import load_dotenv
 from functools import lru_cache
 
 #NLTK Environment Setup
@@ -18,33 +18,10 @@ os.environ['NLTK_DATA'] = str(nltk_data_path)
 nltk.data.path.clear()
 nltk.data.path.append(str(nltk_data_path))
 
-# Download NLTK resources (Uncomment the first time you run the program)
-# nltk.download('punkt', download_dir=nltk_data_path)
-# nltk.download('punkt_tab', download_dir=nltk_data_path)
-# nltk.download('stopwords', download_dir=nltk_data_path)
-# nltk.download('wordnet', download_dir=nltk_data_path)
-# nltk.download('omw-1.4', download_dir=nltk_data_path)
-
 from nltk.tokenize import word_tokenize
 from nltk.corpus import stopwords
 from nltk.stem import WordNetLemmatizer
 from nltk.corpus import wordnet
-
-if __name__ == "__main__":
-    from gmail_auth import get_authenticated_email, load_existing_token
-    import concurrent.futures
-
-    # Authenticate Gmail API
-    service = load_existing_token()
-    user_email = get_authenticated_email(service)
-    user_name = user_email.split("@")[0]
-
-    # Connect to MongoDB
-    load_dotenv()
-    mongo_uri = os.getenv("MONGO_URI")
-    mongo_client = pymongo.MongoClient(mongo_uri)
-    db = mongo_client["User-Activity-Analysis"]
-    collection = db[user_name]
 
 # Load NLP model
 job_postings_set = set()
@@ -136,7 +113,7 @@ def preprocess_datetime(dt_string):
     return None
 
 # Pre-processing for Project's Actual Emails
-def process_emails(batch_size = 100):
+def process_emails(collection, batch_size = 100):
     wordnet.ensure_loaded()
     bulk_operations = []
 
@@ -178,7 +155,3 @@ def process_emails(batch_size = 100):
             collection.bulk_write(bulk_operations)
             bulk_operations.clear()
     if bulk_operations: collection.bulk_write(bulk_operations)
-
-if __name__ == "__main__":
-    process_emails()
-    print("✅ Preprocessing complete! Data updated in MongoDB.")

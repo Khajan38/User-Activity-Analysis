@@ -1,3 +1,9 @@
+#Root Directory in System Path
+import sys, os
+root_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '../../'))
+if root_path not in sys.path:
+    sys.path.append(root_path)
+
 import pickle
 import pandas as pd
 from Implemented_Algos.TF_IDF import TfidfVectorizer
@@ -6,7 +12,7 @@ from src.ML_Algorithms.Implemented_Algos.Naive_Bayes_Classifier import Multinomi
 from src.UI_Requirements.model_dashboard import plotDataset, plotConfusionMatrix, plotROCCurve, plotProbabilitiesWithThresholds
 from src.Data_Scrapping_and_Pre_Processing.pre_processing import preprocess_dataFrame
 
-df = pd.read_csv("../dependencies/meetings_dataset.csv") #Data Frame for Testing Database
+df = pd.read_csv("dependencies/meetings_dataset.csv") #Data Frame for Testing Database
 if "text" not in df.columns or "category" not in df.columns:
     raise ValueError("CSV file must contain 'text' and 'category' columns.")
 
@@ -30,9 +36,9 @@ print(f"✅ Model Accuracy: {accuracy * 100:.2f}%")
 plotProbabilitiesWithThresholds(y_test, y_pred, y_score, classifier.classMap, best_thresholds)
 
 #Save model & vectorizer
-with open("../dependencies/meetings_NB.pkl", "wb") as model_file:
+with open("dependencies/meetings_NB.pkl", "wb") as model_file:
     pickle.dump(classifier, model_file)
-with open("../dependencies/meetings_vectorizer.pkl", "wb") as vectorizer_file:
+with open("dependencies/meetings_vectorizer.pkl", "wb") as vectorizer_file:
     pickle.dump(vectorizer, vectorizer_file)
 
 print("✅ Model training complete! Classifier saved.")

@@ -66,8 +66,11 @@ const GmailAnalyticsDashboard = () => {
   const [activeTab, setActiveTab] = useState('overview');
   const [dropdownVisible, setDropdownVisible] = useState(false);
   const [userEmail, setUserEmail] = useState('example@gmail.com');
-  
+  const [loading, setLoading] = useState(null);
+  const [error, setError] = useState(null);
+
   const handleLoginClick = async () => {
+    setLoading("Logging In...");
     try {
       const response = await fetch('https://cognitick-api.onrender.com/api/login', {
         method: 'POST',
@@ -81,13 +84,17 @@ const GmailAnalyticsDashboard = () => {
         setDropdownVisible(false);
       } else {
         console.error('Login failed or email not returned');
+        setError("Failed to Login");
+        setLoading(null);
       }
     } catch (error) {
       console.error('Error during login:', error);
-    }
+      setError("Error during Login");
+    }setLoading(null);
   };
 
   const handleLogoutClick = async () => {
+    setError("Logging Out...");
     try {
       const response = await fetch('https://cognitick-api.onrender.com/api/logout', {
         method: 'POST',
@@ -101,14 +108,27 @@ const GmailAnalyticsDashboard = () => {
         setDropdownVisible(false);
       } else {
         console.error('Logout failed');
+        setError("Failed to Logout");
       }
     } catch (error) {
       console.error('Error during logout:', error);
-    }
+      setError("Error during Logout");
+    }setError(null);  
   };  
   
   return (
     <div className="dashboard-container">
+      {loading && (
+        <>
+          <div className="toast-overlay" />
+          <div className="toast-message processing">Logging You In...</div>
+        </>
+      )}{error && (
+        <>
+          <div className="toast-overlay" onClick={() => {if (error !== "Logging Out...") setError(null);}}/>
+          <div className="toast-message error" onClick={() => {if (error !== "Logging Out...") setError(null);}}>{error}</div>
+        </>
+      )}
       <header className="header">
         <div className="left-section">
           <img class="logo" src={Logo} alt="App Logo"/>

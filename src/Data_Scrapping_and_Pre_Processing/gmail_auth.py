@@ -5,8 +5,8 @@ from googleapiclient.discovery import build
 SCOPES = ["https://www.googleapis.com/auth/gmail.readonly"] #Define API scope (Read-only access)
 
 # Paths for credentials and token storage
-TOKEN_DIR = "../data/tokens"
-CREDENTIALS_PATH = "../data/credentials.json"
+TOKEN_DIR = "data/tokens"
+CREDENTIALS_PATH = "data/credentials.json"
 os.makedirs(TOKEN_DIR, exist_ok=True)
 
 def get_authenticated_email(service):
@@ -24,10 +24,3 @@ def load_existing_token():
         token_file.write(creds.to_json())
         print(f"✅ Token saved for {email}!")
     return service
-
-if __name__ == "__main__":
-    service = load_existing_token()
-    if service:
-        print("✅ Gmail API authentication successful!")
-    else:
-        print("❌ Gmail API authentication unsuccessful!")

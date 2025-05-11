@@ -1,0 +1,8 @@
+{
+    "user_name": "example",
+    "user_email": "example@gmail.com",
+    "collection": "example",
+    "collectionM": "Meetings_example",
+    "collectionC": "Meetings_example_Calendar",
+    "tempCollection": "temp_example"
+}

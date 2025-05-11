@@ -1,31 +1,23 @@
-import os
+#Root Directory in System Path
+import sys, os
+root_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '../'))
+if root_path not in sys.path:
+    sys.path.append(root_path)
+
 import time
 import base64
-import pymongo
 import datetime
 from bs4 import BeautifulSoup
-from dotenv import load_dotenv
-from src.Data_Scrapping_and_Pre_Processing.gmail_auth import get_authenticated_email, load_existing_token
-
-# Authenticate Gmail API
-service = load_existing_token()
-user_email = get_authenticated_email(service)
-user_name = user_email.split("@")[0]
-
-# Connect to MongoDB
-load_dotenv()
-mongo_uri = os.getenv("MONGO_URI")
-mongo_client = pymongo.MongoClient(mongo_uri)
-db = mongo_client["User-Activity-Analysis"]
-collection = db[user_name]
-temp_collection = db[f"{user_name}_temp"]
+from src.user_context_manager import load_user_context
+user_context = load_user_context()
+user_name = user_context['user_name']
 
 # Define date range (last 90 days)
 days_back = 90
 date_from = (datetime.datetime.now() - datetime.timedelta(days=days_back)).strftime("%Y/%m/%d")
 query = f"after:{date_from}"
 
-def batch_fetch_email_details(msg_ids):
+def batch_fetch_email_details(msg_ids, service):
     batch = service.new_batch_http_request()
     email_data_list = []
     def callback(request_id, response, exception):
@@ -66,12 +58,12 @@ def extract_email_data(email_data):
         "body": body
     }
 
-MAX_RETRIES = 3  # Define max retries
-def fetch_emails():
+MAX_RETRIES = 3
+def fetch_emails(service, collection, temp_collection):
     print(f"📩 Fetching emails from the last {days_back} days...")
     total_emails = 0
     next_page_token = None
-    temp_collection.delete_many({})  # Clear temp collection
+    if(temp_collection != None): temp_collection.delete_many({})  # Clear temp collection
     print(f"🗑️ Cleared temp storage for {user_name}\n\t\t\t⌛ Processing...")
     while True:
         for attempt in range(MAX_RETRIES):
@@ -81,10 +73,13 @@ def fetch_emails():
             except Exception as e:
                 print(f"⚠️ Error fetching messages, retrying ({attempt + 1}/{MAX_RETRIES})...")
                 time.sleep(2 ** attempt)  # Exponential backoff
+        if response is None:
+            print("❌ Failed to fetch messages after multiple retries. Aborting...")
+            break
         messages = response.get("messages", [])
         if not messages: break
         msg_ids = [msg["id"] for msg in messages]
-        email_data_list = batch_fetch_email_details(msg_ids)
+        email_data_list = batch_fetch_email_details(msg_ids, service)
         if email_data_list:
             temp_collection.insert_many(email_data_list)
             total_emails += len(email_data_list)
@@ -94,8 +89,3 @@ def fetch_emails():
     collection.drop()
     temp_collection.rename(user_name)
     print(f"🚀 Done! {total_emails} emails fetched and stored in MongoDB.")
-
-if __name__ == "__main__":
-    print(f"\n🟢 User {user_email} initiated the request...")
-    fetch_emails()
-    print("✅ Email fetching and storage complete! 🚀")

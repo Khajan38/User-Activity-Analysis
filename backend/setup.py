@@ -1,20 +1,21 @@
+#Root Directory in System Path
+import sys, os
+root_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '../'))
+if root_path not in sys.path:
+    sys.path.append(root_path)
+
 import os
-import pymongo
-from dotenv import load_dotenv
-from src.user_context import user_context
 
-load_dotenv()
-
-def initializeAPI(user_name="example", user_email="example@gmail.com"):
-    user_context['user_email'] = user_email
-    user_context['user_name'] = user_name
-    mongo_uri = os.getenv("MONGO_URI")
-    if not mongo_uri: raise ValueError("MONGO_URI not set in environment variables")
-    mongo_client = pymongo.MongoClient(mongo_uri)
-    db = mongo_client["User-Activity-Analysis"]
-    user_context['collection'] = db[user_name]
-    user_context['collectionM'] = db["Meetings_" + user_name]
-    user_context['collectionC'] = db["Meetings_" + user_name + "_Calendar"]
+def initializeAPI(user_Name="example", user_Email="example@gmail.com"):
+    from src.user_context_manager import update_user_context
+    update_user_context(
+        user_name=user_Name,
+        user_email=user_Email,
+        collection=user_Name,
+        collectionM=f"Meetings_{user_Name}",
+        collectionC=f"Meetings_{user_Name}_Calendar",
+        tempCollection=f"temp_{user_Name}"
+    )
 
 def trainModels():
     spam_model_path = os.path.abspath('dependencies/spam_NB.pkl')
