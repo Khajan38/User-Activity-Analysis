@@ -1,11 +1,11 @@
 from flask import Flask
 from flask_cors import CORS
-from meetings_data import meetings_bp
-from user_state import  login_bp, logout_bp, refresh_bp
-from setup import initializeAPI, trainModels, downloadNLTKSpacy
+from backend.meetings_data import meetings_bp
+from backend.user_state import  login_bp, logout_bp, refresh_bp
+from backend.setup import initializeAPI, trainModels, downloadNLTKSpacy
 
 app = Flask(__name__)
-CORS(app, origins=["http://localhost:3000"])
+CORS(app, origins=["https://user-activity-analysis-git-main-khajan-bhatts-projects.vercel.app/"])
 trainModels()
 initializeAPI()
 downloadNLTKSpacy()

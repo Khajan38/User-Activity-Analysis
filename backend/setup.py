@@ -17,19 +17,19 @@ def initializeAPI(user_name="example", user_email="example@gmail.com"):
     user_context['collectionC'] = db["Meetings_" + user_name + "_Calendar"]
 
 def trainModels():
-    spam_model_path = os.path.abspath('../dependencies/spam_NB.pkl')
-    spam_vectorizer_path = os.path.abspath('../dependencies/spam_vectorizer.pkl')
-    meetings_model_path = os.path.abspath('../dependencies/meetings_NB.pkl')
-    meetings_vectorizer_path = os.path.abspath('../dependencies/meetings_NB.pkl')
+    spam_model_path = os.path.abspath('dependencies/spam_NB.pkl')
+    spam_vectorizer_path = os.path.abspath('dependencies/spam_vectorizer.pkl')
+    meetings_model_path = os.path.abspath('dependencies/meetings_NB.pkl')
+    meetings_vectorizer_path = os.path.abspath('dependencies/meetings_NB.pkl')
     if not os.path.exists(spam_model_path or spam_vectorizer_path):
-        os.system("python ../src/ML_Algorithms/spam_classifier.py")
+        os.system("python src/ML_Algorithms/spam_classifier.py")
     else: print("spam already exits...")
     if not os.path.exists(meetings_model_path or meetings_vectorizer_path):
-        os.system("python ../src/ML_Algorithms/meeting_classifier.py")
+        os.system("python src/ML_Algorithms/meeting_classifier.py")
     else: print("meetings already exits...")
 
 def downloadNLTKSpacy():
-    nltk_data_path = os.path.abspath('../dependencies/nltk_data')
+    nltk_data_path = os.path.abspath('dependencies/nltk_data')
     if not os.path.exists(nltk_data_path):os.makedirs(nltk_data_path)
     os.environ['NLTK_DATA'] = str(nltk_data_path)
     import nltk

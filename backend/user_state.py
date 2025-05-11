@@ -1,5 +1,5 @@
 from flask import Blueprint, jsonify
-from setup import initializeAPI
+from backend.setup import initializeAPI
 
 login_bp = Blueprint('login', __name__)
 logout_bp = Blueprint('logout', __name__)
