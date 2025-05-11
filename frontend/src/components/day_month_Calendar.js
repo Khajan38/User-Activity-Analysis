@@ -1,3 +1,6 @@
+import React, { useState } from 'react';
+import { ContextMenu, CreateMeetingModal } from "./event_handlers";
+
 export function MonthView({ selectedDate, onDateClick, meetings }) {
   const getDaysInMonth = (year, month) => {
     return new Date(year, month + 1, 0).getDate();
@@ -66,21 +69,23 @@ export function MonthView({ selectedDate, onDateClick, meetings }) {
                   </span>
                 </div>
                 <div className="day-events">
-                  {getMeetingsForDay(day)
-                    .slice(0, 3)
-                    .map((meeting) => (
-                      <div
-                        key={meeting.id}
-                        className={`event-item ${meeting.color}`}
-                      >
-                        {meeting.startTime} - {meeting.title}
-                      </div>
-                    ))}
-                  {getMeetingsForDay(day).length > 3 && (
-                    <div className="more-events">
-                      +{getMeetingsForDay(day).length - 3} more
-                    </div>
-                  )}
+                  {(() => {
+                    const meetingsToday = getMeetingsForDay(day);
+                    return (
+                      <>
+                        {meetingsToday.slice(0, 3).map((meeting) => (
+                          <div key={meeting.id} className={`event-item ${meeting.color}`}>
+                            {meeting.startTime} - {meeting.title}
+                          </div>
+                        ))}
+                        {meetingsToday.length > 3 && (
+                          <div className="more-events">
+                            +{meetingsToday.length - 3} more
+                          </div>
+                        )}
+                      </>
+                    );
+                  })()}
                 </div>
               </div>
             )}
@@ -92,13 +97,15 @@ export function MonthView({ selectedDate, onDateClick, meetings }) {
 }
 
 export function DayView({ selectedDate, meetings }) {
+  const [contextMenu, setContextMenu] = useState({visible: false, x: 0, y: 0, meeting: null,});
+  const [showModal, setShowModal] = useState(false);
+  const [modalData, setModalData] = useState(null);
   const todayMeetings = meetings.filter(
     (meeting) =>
       meeting.date.getDate() === selectedDate.getDate() &&
       meeting.date.getMonth() === selectedDate.getMonth() &&
       meeting.date.getFullYear() === selectedDate.getFullYear()
   );
-
   const timeSlots = [];
   for (let hour = 0; hour < 24; hour++) {
     timeSlots.push(`${hour.toString().padStart(2, "0")}:00`);
@@ -112,8 +119,34 @@ export function DayView({ selectedDate, meetings }) {
     });
   };
 
+  const handleSlotClick = (time, event) => {
+    const hour = parseInt(time.split(":")[0]);
+    const startTime = `${hour.toString().padStart(2, "0")}:00`;
+    const endTime = `${(hour + 1).toString().padStart(2, "0")}:00`;
+    setModalData({ date: selectedDate, startTime, endTime });
+    setShowModal(true);
+  };
+
+  const handleMeetingClick = (event, meeting) => {
+    event.stopPropagation();
+    setContextMenu({
+      visible: true,
+      x: event.clientX,
+      y: event.clientY,
+      meeting,
+    });
+  };
+
+  const handleCloseContextMenu = () => {
+    setContextMenu({ visible: false, x: 0, y: 0, meeting: null });
+  };
+
+  const handleCloseModal = () => {
+    setShowModal(false);
+  };
+
   return (
-    <div className="day-view">
+    <div className="day-view" onClick={handleCloseContextMenu}>
       <div className="time-column">
         {timeSlots.map((time, index) => (
           <div key={index} className="time-slot">
@@ -123,7 +156,12 @@ export function DayView({ selectedDate, meetings }) {
       </div>
       <div className="schedule-column">
         {timeSlots.map((time, index) => (
-          <div key={index} className="schedule-slot">
+          <div
+            key={index}
+            className="schedule-slot"
+            onClick={(e) => handleSlotClick(time, e)}
+            style={{ position: "relative" }}
+          >
             {getMeetingsForTimeSlot(time).map((meeting) => {
               const startMinutes = parseInt(meeting.startTime.split(":")[1]);
               const endHour = parseInt(meeting.endTime.split(":")[0]);
@@ -135,16 +173,8 @@ export function DayView({ selectedDate, meetings }) {
               const height = durationHours * 100;
               return (
                 startHour === parseInt(time.split(":")[0]) && (
-                  <div
-                    key={meeting.id}
-                    className={`meeting-item ${meeting.color}`}
-                    style={{
-                      top: `${topPosition}%`,
-                      height: `${height}%`,
-                      width: `${100}%`
-                    }}
-                  >
-                    <div className="meeting-title">{meeting.title}</div>
+                  <div key={meeting.id} className={`meeting-item ${meeting.color}`} style={{ position: "absolute", top: `${topPosition}%`, height: `${height}%`, width: `100%`, }} onClick={(e) => handleMeetingClick(e, meeting)}>
+                    <div className="meeting-title">{meeting.title}{meeting.id}</div>
                     <div className="meeting-time">
                       {meeting.startTime} - {meeting.endTime}
                     </div>
@@ -155,6 +185,25 @@ export function DayView({ selectedDate, meetings }) {
           </div>
         ))}
       </div>
+      <ContextMenu
+        visible={contextMenu.visible}
+        x={contextMenu.x}
+        y={contextMenu.y}
+        meeting={contextMenu.meeting}
+        onClose={handleCloseContextMenu}
+      />
+      {showModal && (
+        <CreateMeetingModal
+          onClose={handleCloseModal}
+          onSave={(meetingData) => {
+            console.log('Saving meeting data:', meetingData);
+            setShowModal(false);
+          }}
+          selectedDate={modalData.date}
+          startTime={modalData.startTime}
+          endTime={modalData.endTime}
+        />
+      )}
     </div>
   );
 }

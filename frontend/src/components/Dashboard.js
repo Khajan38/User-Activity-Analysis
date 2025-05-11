@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import Logo from '../assets/Logo.jpg';
+import User from '../assets/User.jpg';
 import './CSS/dashboard.css';
 import {OverviewContent} from './overview.js'
 import CalenderApp from './calendar.js'
@@ -63,7 +64,49 @@ const NavItem = ({ label, active, onClick, icon }) => {
 
 const GmailAnalyticsDashboard = () => {
   const [activeTab, setActiveTab] = useState('overview');
+  const [dropdownVisible, setDropdownVisible] = useState(false);
+  const [userEmail, setUserEmail] = useState('example@gmail.com');
+  
+  const handleLoginClick = async () => {
+    try {
+      const response = await fetch('https://cognitick-api.onrender.com/api/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        }
+      });
+      const result = await response.json();
+      if (result.email) {
+        setUserEmail(result.email);
+        setDropdownVisible(false);
+      } else {
+        console.error('Login failed or email not returned');
+      }
+    } catch (error) {
+      console.error('Error during login:', error);
+    }
+  };
 
+  const handleLogoutClick = async () => {
+    try {
+      const response = await fetch('https://cognitick-api.onrender.com/api/logout', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+      const result = await response.json();
+      if (result.email) {
+        setUserEmail(result.email);
+        setDropdownVisible(false);
+      } else {
+        console.error('Logout failed');
+      }
+    } catch (error) {
+      console.error('Error during logout:', error);
+    }
+  };  
+  
   return (
     <div className="dashboard-container">
       <header className="header">
@@ -71,12 +114,19 @@ const GmailAnalyticsDashboard = () => {
           <img class="logo" src={Logo} alt="App Logo"/>
           <h1>COGNITICK.AI</h1>
         </div>
-        <div className="user-info">
-          <span>example@gmail.com</span>
-          <div className="user-avatar"></div>
+        <div className="user-info" onClick={() => setDropdownVisible(!dropdownVisible)}>
+          <span>{userEmail}</span>
+          <img src={User} alt={User} className="user-avatar" />
+          {dropdownVisible && (
+            <div className="dropdown-menu">
+              <button onClick={handleLoginClick}>Login</button>
+              <button onClick={handleLogoutClick} disabled={userEmail === 'example@gmail.com'}>Logout</button>
+              <button disabled>Refresh</button>
+            </div>
+          )}
         </div>
       </header>
-
+      
       <div className="dashboard-content">
         <aside className="sidebar">
           <nav>

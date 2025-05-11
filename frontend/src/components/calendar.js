@@ -5,6 +5,7 @@ import './CSS/day_view.css';
 import './CSS/meeting_window.css';
 import MeetingsList from '../assets/meetings_data';
 import {DayView, MonthView} from './day_month_Calendar';
+import { CreateMeetingModal } from './event_handlers';
 
 function CalendarApp() {
   const [view, setView] = useState('month');
@@ -66,6 +67,8 @@ function CalendarApp() {
           onClose={closeCreateModal}
           onSave={handleCreateMeeting}
           selectedDate={selectedDate}
+          startTime="09:00"
+          endTime="10:00"
         />
       )}
     </div>
@@ -131,194 +134,6 @@ function Header({ view, selectedDate, setView, setSelectedDate, openCreateModal 
       </select>
         <button onClick={openCreateModal} className="create-button">+ Create</button>
       </div>
-    </div>
-  );
-}
-
-function CreateMeetingModal ({ onClose, onSave, selectedDate }) {
-  const [meetingData, setMeetingData] = useState({
-    title: '',
-    date: selectedDate,
-    startTime: '09:00',
-    endTime: '10:00',
-    color: 'blue',
-    description: '',
-    attendees: []
-  });
-  
-  const [attendeeInput, setAttendeeInput] = useState('');
-  
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setMeetingData({
-      ...meetingData,
-      [name]: value
-    });
-  };
-  
-  const handleAddAttendee = () => {
-    if (attendeeInput.trim() !== '') {
-      setMeetingData({
-        ...meetingData,
-        attendees: [...meetingData.attendees, attendeeInput.trim()]
-      });
-      setAttendeeInput('');
-    }
-  };
-  
-  const handleRemoveAttendee = (index) => {
-    const updatedAttendees = [...meetingData.attendees];
-    updatedAttendees.splice(index, 1);
-    setMeetingData({
-      ...meetingData,
-      attendees: updatedAttendees
-    });
-  };
-  
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    onSave(meetingData);
-  };
-  
-  const colorOptions = [
-    { id: 'blue', label: 'Blue' },
-    { id: 'green', label: 'Green' },
-    { id: 'purple', label: 'Purple' },
-    { id: 'red', label: 'Red' },
-    { id: 'orange', label: 'Orange' }
-  ];
-  
-  return (
-    <div className="modal-overlay">
-      <div className = "modal">
-      <div className="modal-header">
-        <h2>Create Meeting</h2>
-        <button className="close-button" onClick={onClose}>×</button>
-      </div>
-      <div className="modal-content">
-        <form onSubmit={handleSubmit}>
-          <div className="form-group" >
-            <label>Title</label>
-            <input
-              type="text"
-              name="title"
-              placeholder="Enter Subject"
-              value={meetingData.title}
-              onChange={handleChange}
-              required
-            />
-          </div>
-          
-          <div className="form-row">
-            <div className="form-group">
-              <label>Date</label>
-              <input
-                type="date"
-                name="date"
-                value={meetingData.date.toISOString().split('T')[0]}
-                onChange={(e) => {
-                  const newDate = new Date(e.target.value);
-                  setMeetingData({
-                    ...meetingData,
-                    date: newDate
-                  });
-                }}
-                required
-              />
-            </div>
-            <div className="fgroup">
-            <div className="form-group">
-              <label>Start Time</label>
-              <input
-                type="time"
-                name="startTime"
-                value={meetingData.startTime}
-                onChange={handleChange}
-                required
-              />
-            </div>
-            
-            <div className="form-group">
-              <label>End Time</label>
-              <input
-                type="time"
-                name="endTime"
-                value={meetingData.endTime}
-                onChange={handleChange}
-                required
-              />
-            </div>
-            </div>
-          </div>
-          
-          <div className="form-group">
-            <label>Color</label>
-            <div className="color-options">
-              {colorOptions.map((color) => (
-                <div
-                  key={color.id}
-                  className={`color-option ${color.id} ${meetingData.color === color.id ? 'selected' : ''}`}
-                  onClick={() => setMeetingData({ ...meetingData, color: color.id })}
-                >
-                  {meetingData.color === color.id && <span>✓</span>}
-                </div>
-              ))}
-            </div>
-          </div>
-          
-          <div className="form-group">
-            <label>Description</label>
-            <textarea
-              name="description"
-              placeholder="Enter Descriptiont"
-              value={meetingData.description}
-              onChange={handleChange}
-              rows="3"
-            />
-          </div>
-          
-          <div className="form-group">
-            <label>Attendees</label>
-            <div className="attendee-input">
-              <input
-                type="text"
-                value={attendeeInput}
-                onChange={(e) => setAttendeeInput(e.target.value)}
-                placeholder="Enter attendee name"
-              />
-              <button
-                type="button"
-                onClick={handleAddAttendee}
-              >
-                Add
-              </button>
-            </div>
-            
-            <div className="attendee-list">
-              {meetingData.attendees.map((attendee, index) => (
-                <div key={index} className="attendee-item">
-                  <span>{attendee}</span>
-                  <button
-                    type="button"
-                    onClick={() => handleRemoveAttendee(index)}
-                  >
-                    ×
-                  </button>
-                </div>
-              ))}
-            </div>
-          </div>
-          
-          <div className="form-actions">
-            <button type="button" onClick={onClose} className="cancel-button">
-              Cancel
-            </button>
-            <button type="submit" className="save-button">
-              Save
-            </button>
-          </div>
-        </form>
-      </div> </div>
     </div>
   );
 }

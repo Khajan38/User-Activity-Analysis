@@ -10,7 +10,7 @@ const MeetingsList = ({ setGlobalMeetings }) => {
         const response = await axios.get("https://cognitick-api.onrender.com/api/meetings");
         // Format meetings data according to required structure
         const formattedMeetings = response.data.map((meeting) => ({
-          id: meeting.id || 0,
+          id: meeting._id || 0,
           title: meeting.title || "",
           date: new Date(meeting.date),
           startTime: meeting.startTime || "09:00",
