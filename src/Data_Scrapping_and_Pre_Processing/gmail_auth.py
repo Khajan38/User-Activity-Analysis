@@ -6,7 +6,7 @@ SCOPES = ["https://www.googleapis.com/auth/gmail.readonly"] #Define API scope (R
 
 # Paths for credentials and token storage
 TOKEN_DIR = "data/tokens"
-CREDENTIALS_PATH = "data/credentials.json"
+CREDENTIALS_PATH = "credentials.json"
 os.makedirs(TOKEN_DIR, exist_ok=True)
 
 def get_authenticated_email(service):
