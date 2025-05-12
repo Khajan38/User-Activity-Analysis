@@ -1,6 +1,7 @@
 import { ObjectId } from 'bson';
 import './CSS/meeting_window.css';
 import React, { useState } from 'react';
+const BASE_URL = process.env.REACT_APP_API_BASE_URL;
 
 export function ContextMenu({ visible, x, y, meeting, onAction, onClose }) {
   if (!visible) return null;
@@ -81,7 +82,7 @@ export function CreateMeetingModal({ onClose, onSave, selectedDate, startTime, e
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      fetch("https://cognitick-api.onrender.com/api/meetings", {
+      fetch(`${BASE_URL}/api/meetings`, {
         method: "POST",
         headers: {"Content-Type": "application/json"},
         body: JSON.stringify(meetingData)

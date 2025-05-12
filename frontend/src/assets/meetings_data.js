@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
+const BASE_URL = process.env.REACT_APP_API_BASE_URL;
 
 const MeetingsList = ({ setGlobalMeetings }) => {
   const [loading, setLoading] = useState(true);
@@ -7,7 +8,7 @@ const MeetingsList = ({ setGlobalMeetings }) => {
   useEffect(() => {
     const fetchMeetings = async () => {
       try {
-        const response = await axios.get("https://cognitick-api.onrender.com/api/meetings");
+        const response = await axios.get(`${BASE_URL}/api/meetings`);
         // Format meetings data according to required structure
         const formattedMeetings = response.data.map((meeting) => ({
           id: meeting._id || 0,

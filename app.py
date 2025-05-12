@@ -8,8 +8,8 @@ from backend.setup import initializeAPI, trainModels, downloadNLTKSpacy
 app = Flask(__name__)
 CORS(app, origins="*")
 initializeAPI()
-trainModels()
 downloadNLTKSpacy()
+trainModels()
 
 app.register_blueprint(login_bp, url_prefix='/api')
 app.register_blueprint(logout_bp, url_prefix='/api')

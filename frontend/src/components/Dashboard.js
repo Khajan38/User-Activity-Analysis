@@ -4,6 +4,7 @@ import User from '../assets/User.jpg';
 import './CSS/dashboard.css';
 import {OverviewContent} from './overview.js'
 import CalenderApp from './calendar.js'
+const BASE_URL = process.env.REACT_APP_API_BASE_URL;
 
 const ChartIcon = () => (
   <svg className="nav-item-icon" width="20" height="20" fill="currentColor" viewBox="0 0 20 20">
@@ -72,7 +73,7 @@ const GmailAnalyticsDashboard = () => {
   const handleLoginClick = async () => {
     setLoading("Logging In...");
     try {
-      const response = await fetch('https://cognitick-api.onrender.com/api/login', {
+      const response = await fetch(`${BASE_URL}/api/login`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -96,7 +97,7 @@ const GmailAnalyticsDashboard = () => {
   const handleLogoutClick = async () => {
     setError("Logging Out...");
     try {
-      const response = await fetch('https://cognitick-api.onrender.com/api/logout', {
+      const response = await fetch(`${BASE_URL}/api/logout`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
