@@ -34,6 +34,7 @@ y_score = classifier.getPredictedScores()
 plotROCCurve(y_test, y_score, classifier.classMap)
 print(f"✅ Model Accuracy: {accuracy * 100:.2f}%")
 plotProbabilitiesWithThresholds(y_test, y_pred, y_score, classifier.classMap, best_thresholds)
+plotProbabilitiesWithThresholds(y_test, y_pred, y_score, classifier.classMap, best_thresholds) #Gives Best Threshold
 
 #Save model & vectorizer
 with open("dependencies/meetings_NB.pkl", "wb") as model_file:

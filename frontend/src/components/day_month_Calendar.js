@@ -96,16 +96,18 @@ export function MonthView({ selectedDate, onDateClick, meetings }) {
   );
 }
 
-export function DayView({ selectedDate, meetings }) {
+export function DayView({ selectedDate, meetings, onSaveMeeting }) {
   const [contextMenu, setContextMenu] = useState({visible: false, x: 0, y: 0, meeting: null,});
   const [showModal, setShowModal] = useState(false);
   const [modalData, setModalData] = useState(null);
+  
   const todayMeetings = meetings.filter(
     (meeting) =>
       meeting.date.getDate() === selectedDate.getDate() &&
       meeting.date.getMonth() === selectedDate.getMonth() &&
       meeting.date.getFullYear() === selectedDate.getFullYear()
   );
+
   const timeSlots = [];
   for (let hour = 0; hour < 24; hour++) {
     timeSlots.push(`${hour.toString().padStart(2, "0")}:00`);
@@ -174,7 +176,7 @@ export function DayView({ selectedDate, meetings }) {
               return (
                 startHour === parseInt(time.split(":")[0]) && (
                   <div key={meeting.id} className={`meeting-item ${meeting.color}`} style={{ position: "absolute", top: `${topPosition}%`, height: `${height}%`, width: `100%`, }} onClick={(e) => handleMeetingClick(e, meeting)}>
-                    <div className="meeting-title">{meeting.title}{meeting.id}</div>
+                    <div className="meeting-title">{meeting.title}</div>
                     <div className="meeting-time">
                       {meeting.startTime} - {meeting.endTime}
                     </div>
@@ -197,6 +199,7 @@ export function DayView({ selectedDate, meetings }) {
           onClose={handleCloseModal}
           onSave={(meetingData) => {
             console.log('Saving meeting data:', meetingData);
+            onSaveMeeting(meetingData);
             setShowModal(false);
           }}
           selectedDate={modalData.date}

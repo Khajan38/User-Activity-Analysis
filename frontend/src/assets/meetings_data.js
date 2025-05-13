@@ -21,6 +21,7 @@ const MeetingsList = ({ setGlobalMeetings }) => {
           attendees: meeting.attendees || [],
         }));
         setGlobalMeetings(formattedMeetings);
+        console.log("Meetings fetched:", formattedMeetings.length);
         setLoading(false);
       } catch (error) {
         console.error("Error fetching meetings:", error);

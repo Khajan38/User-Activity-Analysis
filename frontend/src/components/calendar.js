@@ -26,14 +26,18 @@ function CalendarApp() {
   };
 
   const handleCreateMeeting = (newMeeting) => {
-    const newId = meetings.length > 0
-      ? Math.max(...meetings.map(m => m.id)) + 1
-      : 1;
-    const updatedMeetings = [...meetings, { id: newId, ...newMeeting }]
-      .sort((a, b) => a.id - b.id);
-    setMeetings(updatedMeetings);
+    setMeetings((prevMeetings) => {
+      const exists = prevMeetings.some(m => m.id === newMeeting.id);
+      if (exists) {
+        return prevMeetings.map(m =>
+          m.id === newMeeting.id ? newMeeting : m
+        );
+      } else {
+        return [...prevMeetings, newMeeting];
+      }
+    });
     closeCreateModal();
-  };
+  };  
 
   return (
     <div className="calendar-app">
@@ -58,6 +62,7 @@ function CalendarApp() {
             <DayView 
               selectedDate={selectedDate} 
               meetings={meetings} 
+              onSaveMeeting={handleCreateMeeting}
             />
           )}
         </div>

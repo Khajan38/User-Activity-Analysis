@@ -6,9 +6,9 @@ if root_path not in sys.path:
 
 import pickle
 import pandas as pd
-from Implemented_Algos.TF_IDF import TfidfVectorizer
 from sklearn.model_selection import train_test_split
-from Implemented_Algos.Naive_Bayes_Classifier import MultinomialNB
+from src.ML_Algorithms.Implemented_Algos.TF_IDF import TfidfVectorizer
+from src.ML_Algorithms.Implemented_Algos.Naive_Bayes_Classifier import MultinomialNB
 from src.UI_Requirements.model_dashboard import plotDataset, plotConfusionMatrix, plotROCCurve, plotProbabilitiesWithThresholds
 from src.Data_Scrapping_and_Pre_Processing.pre_processing import preprocess_dataFrame
 
@@ -26,14 +26,16 @@ X_train, X_test, y_train, y_test = train_test_split(X_vectors.toarray(), y, test
 best_thresholds = {"ham":0.22, "spam":0.78}
 classifier = MultinomialNB(best_thresholds)
 classifier.fit(X_train, y_train)
-plotDataset(y_train, "Training Dataset")
+plotDataset(y_train, "Training Dataset") #Plotting Training Bar Chart
 y_pred = classifier.predict(X_test)
-plotDataset(y_test, "Testing Dataset")
-accuracy = plotConfusionMatrix(y_test, y_pred)
+plotDataset(y_test, "Testing Dataset") #Plotting Testing Bar Chart
+accuracy = plotConfusionMatrix(y_test, y_pred) #Plot Confusion Matrix and get accuracy
 y_score = classifier.getPredictedScores()
-plotROCCurve(y_test, y_score, classifier.classMap)
+plotROCCurve(y_test, y_score, classifier.classMap) #Plots ROC Curve
 print(f"✅ Model Accuracy: {accuracy * 100:.2f}%")
-plotProbabilitiesWithThresholds(y_test, y_pred, y_score, classifier.classMap, best_thresholds)
+from sklearn.metrics import classification_report
+print(classification_report(y_test, y_pred, target_names=['ham', 'spam']))
+plotProbabilitiesWithThresholds(y_test, y_pred, y_score, classifier.classMap, best_thresholds) #Gives Best Threshold
 
 #Save model & vectorizer
 with open("dependencies/spam_NB.pkl", "wb") as model_file:

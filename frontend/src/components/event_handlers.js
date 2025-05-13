@@ -1,37 +1,17 @@
-import { ObjectId } from 'bson';
+import { v4 as uuidv4 } from 'uuid';
 import './CSS/meeting_window.css';
+import './CSS/meeting_extensions.css';
 import React, { useState } from 'react';
 const BASE_URL = process.env.REACT_APP_API_BASE_URL;
 
 export function ContextMenu({ visible, x, y, meeting, onAction, onClose }) {
   if (!visible) return null;
   return (
-    <div
-      className="context-menu"
-      style={{
-        position: "fixed",
-        top: y,
-        left: x,
-        zIndex: 10,
-        display: "flex",
-        gap: "8px",
-      }}
-    >
-      {["View", "Edit", "Delete"].map((action) => (
+    <div className="context-menu" style={{top: y, left: x}}>
+      {["View", "Edit", "Delete"].map((action, index) => (
         <div
           key={action}
-          className="context-button"
-          style={{
-            width: "40px",
-            height: "40px",
-            borderRadius: "50%",
-            backgroundColor: "#007bff",
-            color: "white",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            cursor: "pointer",
-          }}
+          className={`context-button btn-${index}`}
           onClick={() => {
             alert(`${action} clicked for ${meeting.title}`);
             onClose();
@@ -46,7 +26,7 @@ export function ContextMenu({ visible, x, y, meeting, onAction, onClose }) {
 
 export function CreateMeetingModal({ onClose, onSave, selectedDate, startTime, endTime }) {
   const [meetingData, setMeetingData] = useState({
-    id: new ObjectId() || 0,
+    id: uuidv4() || 0,
     title: '',
     date: selectedDate,
     startTime: startTime,
@@ -82,15 +62,28 @@ export function CreateMeetingModal({ onClose, onSave, selectedDate, startTime, e
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      fetch(`${BASE_URL}/api/meetings`, {
+      const response = await fetch(`${BASE_URL}/api/meetings`, {
         method: "POST",
-        headers: {"Content-Type": "application/json"},
-        body: JSON.stringify(meetingData)
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(meetingData),
       });
-      onSave(meetingData);
+      const result = await response.json();
+      const updatedMeeting = { ...meetingData, id: result._id };
+      onSave((prevMeetings) =>
+        prevMeetings.map((meeting) =>
+          meeting.id === meetingData.id ? updatedMeeting : meeting
+        )
+      );
+      onClose();
     } catch (error) {
       console.error("Error saving meeting:", error);
       alert("Failed to save meeting to server.");
+    }
+  };  
+
+  const handleKeyDown = (e) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
     }
   };
 
@@ -119,6 +112,7 @@ export function CreateMeetingModal({ onClose, onSave, selectedDate, startTime, e
                 placeholder="Enter Subject"
                 value={meetingData.title}
                 onChange={handleChange}
+                onKeyDown={handleKeyDown}
                 required
               />
             </div>
@@ -146,6 +140,7 @@ export function CreateMeetingModal({ onClose, onSave, selectedDate, startTime, e
                     name="startTime"
                     value={meetingData.startTime}
                     onChange={handleChange}
+                    onKeyDown={handleKeyDown}
                     required
                   />
                 </div>
@@ -156,6 +151,7 @@ export function CreateMeetingModal({ onClose, onSave, selectedDate, startTime, e
                     name="endTime"
                     value={meetingData.endTime}
                     onChange={handleChange}
+                    onKeyDown={handleKeyDown}
                     required
                   />
                 </div>
@@ -182,6 +178,7 @@ export function CreateMeetingModal({ onClose, onSave, selectedDate, startTime, e
                 placeholder="Enter Description"
                 value={meetingData.description}
                 onChange={handleChange}
+                onKeyDown={handleKeyDown}
                 rows="3"
               />
             </div>
@@ -192,6 +189,7 @@ export function CreateMeetingModal({ onClose, onSave, selectedDate, startTime, e
                   type="text"
                   value={attendeeInput}
                   onChange={(e) => setAttendeeInput(e.target.value)}
+                  onKeyDown={(e) => {if (e.key === 'Enter') {e.preventDefault(); handleAddAttendee();}}}
                   placeholder="Enter attendee name"
                 />
                 <button type="button" onClick={handleAddAttendee}>Add</button>

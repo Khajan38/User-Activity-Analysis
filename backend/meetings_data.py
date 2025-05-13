@@ -18,7 +18,7 @@ def setMeetings():
     meetings.clear()
     from src.user_context_manager import load_user_context
     user_context = load_user_context()
-    #SetUp MongoDBy
+    #SetUp MongoDB
     from dotenv import load_dotenv
     import pymongo
     load_dotenv()
@@ -47,17 +47,30 @@ def get_meetings():
     user_context = load_user_context()
     global meetings, username
     if not meetings or username != user_context['user_name']:
+        print("Called get_meeting's setMeetings")
         setMeetings()
         username = user_context['user_name']
+    print("Called get_meeting", len(meetings))
     return dumps(meetings)
 
 @meetings_bp.route("/meetings", methods=["POST"])
 def save_meeting():
     from src.user_context_manager import load_user_context
     user_context = load_user_context()
-    collection = user_context['collectionC']
+    # SetUp MongoDBy
+    from dotenv import load_dotenv
+    import pymongo
+    load_dotenv()
+    mongo_uri = os.getenv("MONGO_URI")
+    if not mongo_uri: raise ValueError("MONGO_URI not set in environment variables")
+    mongo_client = pymongo.MongoClient(mongo_uri)
+    db = mongo_client["User-Activity-Analysis"]
+    collection = db[user_context['collectionC']]
     data = request.get_json()
-    data["_id"] = ObjectId(data["id"])
+    _id = ObjectId()
+    data["_id"] = _id
     del data["id"]
     collection.insert_one(data)
-    return jsonify({"message": "Meeting saved"}), 201
+    print("Called save_meeting's setMeetings")
+    setMeetings()
+    return jsonify({"_id": str(_id)}), 201

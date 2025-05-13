@@ -1,0 +1,109 @@
+@import url('https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap');
+
+/*Main Container*/
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 2rem;
+  padding: 2rem;
+  width: 100%;
+  margin: 0 auto;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+/*State Cards*/
+.cards-flex {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.stat-card {
+  background-color: white;
+  border-radius: 0.5rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  padding: 1.5rem;
+  flex: 1 1 300px;
+  max-width: 300px;
+}
+.stat-label {
+  color: #6b7280;
+  font-size: 0.875rem;
+  font-weight: 500;
+  margin: 0;
+}
+.stat-value {
+  font-size: 1.875rem;
+  font-weight: bold;
+  margin: 0.5rem 0 0;
+}
+
+/*Charts Cards*/
+.card {
+  padding: 1.5rem;
+  position: relative;
+  border-radius: 0.5rem;
+  box-sizing: border-box;
+  background-color: white;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  transition: box-shadow 0.3s ease, transform 0.3s ease;
+}
+.card-header {
+  border-bottom: 1px solid #e5e7eb;
+}
+.card-title {
+  font-family:'Great Vibes', cursive;
+  font-weight: 500;
+  font-size: 2rem;
+  font-stretch: expanded;
+  color: black;
+  text-align: center;
+  text-shadow: 0 0 1px black;
+}
+.card-body {
+  display: flexbox;
+  padding: 1rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 3rem;
+  justify-content: center;
+  align-items: center;
+}
+.card:hover {
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.15);
+  transform: translateY(-4px);
+  z-index: 3;
+}
+
+/*Chart Specific Styles*/
+.bar-chart-container{
+  width:550px;
+  height:200px;
+} 
+.plot-chart-container{
+  width:200px;
+}
+
+/*Text and Description*/
+.model-description {
+  margin: 2rem 0;
+  padding: 1rem;
+  background-color: #f9f9f9;
+  border-radius: 8px;
+}
+
+.classification-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 1rem;
+}
+
+.classification-table th, .classification-table td {
+  padding: 0.75rem;
+  text-align: center;
+  border: 1px solid #ccc;
+  font-size: 0.95rem;
+}

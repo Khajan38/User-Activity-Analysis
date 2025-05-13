@@ -11,16 +11,19 @@ initializeAPI()
 downloadNLTKSpacy()
 trainModels()
 
+from backend.model_data import spam_classifier
+
 app.register_blueprint(login_bp, url_prefix='/api')
 app.register_blueprint(logout_bp, url_prefix='/api')
 app.register_blueprint(refresh_bp, url_prefix='/api')
 app.register_blueprint(meetings_bp, url_prefix='/api')
+app.register_blueprint(spam_classifier, url_prefix='/api')
 
 @app.route('/api', methods=['POST'])
 def initial():
     initializeAPI()
     return jsonify({"message": "Initial state - example@gmail.com"}), 201
 
-# if __name__ == '__main__':
-#     port = int(os.environ.get("PORT", 5000))
-#     app.run(debug=True, host='0.0.0.0', port=port)
+if __name__ == '__main__':
+    port = int(os.environ.get("PORT", 5000))
+    app.run(debug=True, host='0.0.0.0', port=port)

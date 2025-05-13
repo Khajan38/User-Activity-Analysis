@@ -18,27 +18,31 @@ def login():
     print(f"\n🟢 User initiated the request...")
     from src.Data_Scrapping_and_Pre_Processing.gmail_auth import get_authenticated_email, load_existing_token
     service = load_existing_token()
-    user_email = get_authenticated_email(service)
-    user_name = user_email.split("@")[0]
-    initializeAPI(user_name, user_email)
+    if service is None:
+        return jsonify({'error': 'Login failed or cancelled.'}), 401  # 401 = Unauthorized
+    try:
+        user_email = get_authenticated_email(service)
+        user_name = user_email.split("@")[0]
+        initializeAPI(user_name, user_email)
+        from dotenv import load_dotenv
+        import pymongo
+        load_dotenv()
+        mongo_uri = os.getenv("MONGO_URI")
+        if not mongo_uri: raise ValueError("MONGO_URI not set in environment variables")
+        mongo_client = pymongo.MongoClient(mongo_uri)
+        db = mongo_client["User-Activity-Analysis"]
+        collection = db[user_name]
+        collectionM = db["Meetings_" + user_name]
+        collectionC = db[f"Meetings_{user_name}_Calendar"]
+        tempCollection = db[f"{user_name}_temp"]
 
-    from dotenv import load_dotenv
-    import pymongo
-    load_dotenv()
-    mongo_uri = os.getenv("MONGO_URI")
-    if not mongo_uri: raise ValueError("MONGO_URI not set in environment variables")
-    mongo_client = pymongo.MongoClient(mongo_uri)
-    db = mongo_client["User-Activity-Analysis"]
-    collection = db[user_name]
-    collectionM = db["Meetings_" + user_name]
-    collectionC = db[f"Meetings_{user_name}_Calendar"]
-    tempCollection = db[f"{user_name}_temp"]
-    initializeAPI(user_name, user_email)
-
-    from src.Pipeline import Pipeline
-    obj = Pipeline(service, collection, collectionM, collectionC, tempCollection)
-    obj.pipeline()
-    return jsonify({'email': user_email}), 200
+        from src.Pipeline import Pipeline
+        obj = Pipeline(service, collection, collectionM, collectionC, tempCollection)
+        obj.pipeline()
+        return jsonify({'email': user_email}), 200
+    except Exception as e:
+        print(f"❌ Exception during login process: {e}")
+        return jsonify({'error': 'Login succeeded but internal error occurred.', 'details': str(e)}), 500
 
 @logout_bp.route('/logout', methods=['POST'])
 def logout():
