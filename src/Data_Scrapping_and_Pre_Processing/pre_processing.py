@@ -112,46 +112,41 @@ def preprocess_datetime(dt_string):
         except ValueError: continue
     return None
 
+def process_single_email(email):
+    email_id = email["_id"]
+    subject = email.get("subject", "")
+    body = email.get("body", "")
+    sender = email.get("from", "")
+    dt_string = email.get("date-time")
+    processed_subject, subject_entities = preprocess_text(subject)
+    processed_body, body_entities = preprocess_text(body)
+    processed_sender = preprocess_sender(sender)
+    processed_dt = preprocess_datetime(dt_string)
+    if processed_body == "": return email_id, None
+    return email_id, {
+        "subject": processed_subject,
+        "body": processed_body,
+        "from": processed_sender,
+        "Entities_names": list(set(subject_entities + body_entities + [processed_sender])),
+        "date-time": processed_dt
+    }
+
 # Pre-processing for Project's Actual Emails
-def process_emails(collection, batch_size = 100):
+def process_emails(collection, batch_size=100):
     wordnet.ensure_loaded()
     bulk_operations = []
-
-    for email in collection.find():
-        email_id = email["_id"]
-        subject = email.get("subject", "")
-        body = email.get("body", "")
-        sender = email.get("from", "")
-        dt_string = email.get("date-time")
-
-        #Multi-Threading
-        with concurrent.futures.ThreadPoolExecutor(max_workers=min(4, os.cpu_count() or 1)) as pool:
-            f1 = pool.submit(preprocess_text, subject)
-            f2 = pool.submit(preprocess_text, body)
-            f3 = pool.submit(preprocess_sender, sender)
-            f4 = pool.submit(preprocess_datetime, dt_string)
-            processed_subject, subject_entities = f1.result()
-            processed_body, body_entities = f2.result()
-            processed_sender = f3.result()
-            processed_dt = f4.result()
-            pool.shutdown(wait=True)
-
-        if processed_body == "":
-            collection.delete_one({"_id": email_id})
-            continue
-
-        update_operation = pymongo.UpdateOne(
-            {"_id": email_id},
-            {"$set": {
-                "subject": processed_subject,
-                "body": processed_body,
-                "from": processed_sender,
-                "Entities_names": list(set(subject_entities + body_entities + [processed_sender])),
-                "date-time": processed_dt
-            }}
-        )
-        bulk_operations.append(update_operation)
-        if len(bulk_operations) >= batch_size:
-            collection.bulk_write(bulk_operations)
-            bulk_operations.clear()
+    with concurrent.futures.ThreadPoolExecutor(max_workers=min(4, os.cpu_count() or 1)) as pool:
+        future_to_email = {
+            pool.submit(process_single_email, email): email["_id"]
+            for email in collection.find()
+        }
+        for future in concurrent.futures.as_completed(future_to_email):
+            email_id, result = future.result()
+            if result is None: collection.delete_one({"_id": email_id})
+            else:
+                bulk_operations.append(pymongo.UpdateOne({"_id": email_id}, {"$set": result}))
+                if len(bulk_operations) >= batch_size:
+                    collection.bulk_write(bulk_operations)
+                    bulk_operations.clear()
     if bulk_operations: collection.bulk_write(bulk_operations)
+    print("Data Processing Complete...")

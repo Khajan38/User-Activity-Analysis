@@ -5,15 +5,19 @@ import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Toolti
 import { Card } from "../visualization_cards";
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, ArcElement, ChartDataLabels);
 
-export default function CategoryDistribution({ categories, titleOut }) {
+export default function CategoryDistribution({ categories, titleOut, doDrawPy = true }) {
   const labels = [...new Set(categories)];
   const backgroundColor = [
-    "rgba(33, 150, 243, 0.7)",  // Light Blue
-    "rgba(179, 229, 252, 0.7)", // Light blue
-    "rgba(33, 150, 243, 0.7)",  // Medium blue
-    "rgba(0, 121, 191, 0.7)",   // Dark blue
-    "rgba(224, 242, 255, 0.7)", // Very light blue
-    "rgba(0, 72, 128, 0.7)"      // Very dark blue (high value)
+    "rgba(33, 150, 243, 0.7)",
+    "rgba(179, 229, 252, 0.7)",
+    "rgba(0, 121, 191, 0.7)",
+    "rgba(0, 72, 128, 0.7)",
+    "rgba(66, 165, 245, 0.7)",
+    "rgba(100, 181, 246, 0.7)",
+    "rgba(25, 118, 210, 0.7)",
+    "rgba(13, 71, 161, 0.7)",
+    "rgba(1, 87, 155, 0.7)",
+    "rgba(144, 202, 249, 0.7)"
   ];
   const counts = labels.map((label) => categories.filter((c) => c === label).length);
   const data = {labels, datasets: [{label: "Email Count", data: counts, backgroundColor},],};
@@ -43,9 +47,11 @@ export default function CategoryDistribution({ categories, titleOut }) {
     },
   };
   return (
-    <Card title={titleOut}>
-        <div className="bar-chart-container"><Bar data={data} options={options} /></div>
+    (doDrawPy === true? (<Card title={titleOut}>
+        <div className="bar-chart-container-200"><Bar data={data} options={options} /></div>
         <div className="plot-chart-container"><Pie data={data} options={pieOptions} /></div>
-    </Card>
+    </Card>) : (<Card title={titleOut}> 
+      <div className="bar-chart-container-500"><Bar data={data} options={options} /></div>
+    </Card>))
   );
 }

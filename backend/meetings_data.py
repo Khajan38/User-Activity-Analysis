@@ -8,6 +8,7 @@ from bson import ObjectId
 from datetime import timedelta
 from bson.json_util import dumps
 from flask import Blueprint, request, jsonify
+from src.ML_Algorithms.sentiment_analysis import sentimentAnalysis
 
 username = None
 meetings_bp = Blueprint('meetings', __name__)
@@ -15,7 +16,6 @@ meetings = []
 
 def setMeetings():
     global meetings
-    meetings.clear()
     from src.user_context_manager import load_user_context
     user_context = load_user_context()
     #SetUp MongoDB
@@ -48,6 +48,7 @@ def get_meetings():
     global meetings, username
     if not meetings or username != user_context['user_name']:
         print("Called get_meeting's setMeetings")
+        meetings = []
         setMeetings()
         username = user_context['user_name']
     print("Called get_meeting", len(meetings))
@@ -71,6 +72,7 @@ def save_meeting():
     data["_id"] = _id
     del data["id"]
     collection.insert_one(data)
+    sentimentAnalysis(collection)
     print("Called save_meeting's setMeetings")
     setMeetings()
     return jsonify({"_id": str(_id)}), 201

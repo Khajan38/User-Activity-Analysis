@@ -6,8 +6,9 @@ if root_path not in sys.path:
 
 CONTEXT_PATH = os.path.abspath(f'{root_path}/dependencies/user_context.json')
 
-def load_user_context():
-    with open(CONTEXT_PATH, 'r') as f:
+def load_user_context(filepath=CONTEXT_PATH):
+    if os.stat(filepath).st_size == 0: return {}
+    with open(filepath, "r") as f:
         return json.load(f)
 
 def save_user_context(updated_context):

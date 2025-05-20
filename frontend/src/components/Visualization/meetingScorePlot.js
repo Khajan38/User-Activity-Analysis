@@ -22,6 +22,7 @@ export default function MeetingScorePlot({ scores, threshold }) {
             x1: x.length,
             y0: threshold,
             y1: threshold,
+            width: 800, height: 500,
             line: { color: 'red', dash: 'dash' },
           }],
           xaxis: { title: 'Email Index' },

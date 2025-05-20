@@ -1,9 +1,15 @@
+# Root Directory in System Path
+import sys, os
+root_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '../../'))
+if root_path not in sys.path:
+    sys.path.append(root_path)
+
 import pickle
 
 # Load the trained model and vectorizer
-with open("../../dependencies/meetings_NB.pkl", "rb") as model_file:
+with open("dependencies/meetings_NB.pkl", "rb") as model_file:
     classifier = pickle.load(model_file)
-with open("../../dependencies/meetings_vectorizer.pkl", "rb") as vectorizer_file:
+with open("dependencies/meetings_vectorizer.pkl", "rb") as vectorizer_file:
     vectorizer = pickle.load(vectorizer_file)
 
 def classify_emails(collection):

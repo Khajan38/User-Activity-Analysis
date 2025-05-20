@@ -1,7 +1,7 @@
 import os
 import time
+import psutil
 import threading
-import subprocess
 from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
 from google.auth.exceptions import GoogleAuthError
@@ -19,23 +19,22 @@ def get_authenticated_email(service):
     return profile["emailAddress"]
 
 def kill_process_on_port(port):
-    try:
-        cmd = f'netstat -ano | findstr :{port}'
-        result = subprocess.check_output(cmd, shell=True).decode()
-        lines = result.strip().split('\n')
-        for line in lines:
-            parts = line.strip().split()
-            pid = parts[-1]
-            cmd_check = f'tasklist /FI "PID eq {pid}" /V'
-            task_result = subprocess.check_output(cmd_check, shell=True).decode()
-            if 'run_local_server' in task_result.lower():
-                os.system(f'taskkill /PID {pid} /F')
-                print(f"✅ Killed OAuth process {pid} on port {port}")
-                return
-        print(f"⚠️ No OAuth process found on port {port}")
-    except Exception as e:
-        print(f"⚠️ Could not kill process on port {port}: {e}")
-
+    print("Inside Killing Function of 8080 port")
+    killed = False
+    for proc in psutil.process_iter(['pid', 'name', 'cmdline']):
+        try:
+            conns = proc.connections(kind='inet')
+            for conn in conns:
+                if conn.laddr.port == port:
+                    cmdline_str = " ".join(proc.info.get("cmdline", []))
+                    if "oauth" in cmdline_str.lower() or "python" in proc.info['name'].lower():
+                        proc.kill()
+                        print(f"✅ Killed process {proc.pid} using port {port}")
+                        killed = True
+        except (psutil.NoSuchProcess, psutil.AccessDenied, psutil.ZombieProcess):
+            continue
+    if not killed:
+        print(f"⚠️ No process found using port {port}")
 
 def run_flow_with_timeout(flow, timeout=30, port=8080, max_retries=2):
     creds_container = {}

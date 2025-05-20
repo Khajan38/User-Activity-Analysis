@@ -20,7 +20,7 @@ export default function ConfusionMatrix({ matrix, labels, accuracy }) {
         width: 800, height: 400, 
         xaxis: {title: { text: 'Predicted', font: { size: 16 }, standoff: 10 }, tickvals: labels, ticktext: labels},
         yaxis: {title: { text: 'Actual', font: { size: 16 }, standoff: 10 }, tickvals: labels,ticktext: labels},
-        margin: { t: 20, l: 50, r: 5, b: 50 },
+        margin: { t: 20, l: 100, r: 5, b: 50 },
       }}
       config={{ responsive: true }}/></Card>
   )

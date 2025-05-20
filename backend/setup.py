@@ -22,12 +22,16 @@ def trainModels():
     spam_vectorizer_path = os.path.abspath('dependencies/spam_vectorizer.pkl')
     meetings_model_path = os.path.abspath('dependencies/meetings_NB.pkl')
     meetings_vectorizer_path = os.path.abspath('dependencies/meetings_NB.pkl')
+    burnout_LR_path = os.path.abspath('dependencies/burnout_LR.pkl')
     if not os.path.exists(spam_model_path or spam_vectorizer_path):
         os.system("python src/ML_Algorithms/spam_classifier.py")
-    else: print("spam already exits...")
+    else: print("spam classifier already exits...")
     if not os.path.exists(meetings_model_path or meetings_vectorizer_path):
         os.system("python src/ML_Algorithms/meeting_classifier.py")
-    else: print("meetings already exits...")
+    else: print("meetings classifier already exits...")
+    if not os.path.exists(burnout_LR_path):
+        os.system("python src/ML_Algorithms/burnout_classifier.py")
+    else: print("burnout classifier already exits...")
 
 def downloadNLTKSpacy():
     nltk_data_path = os.path.abspath('dependencies/nltk_data')

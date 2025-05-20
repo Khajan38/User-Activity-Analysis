@@ -1,23 +1,15 @@
+# Root Directory in System Path
+import sys, os
+root_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '../../'))
+if root_path not in sys.path:
+    sys.path.append(root_path)
+
 import re
-import os
-import pymongo
-from dotenv import load_dotenv
 from concurrent.futures import ThreadPoolExecutor
-from src.UI_Requirements.model_dashboard import plot_meeting_scores
+# from src.UI_Requirements.model_dashboard import plot_meeting_scores
 from src.ML_Algorithms.meeting_categorization import classify_emails
-from src.Data_Scrapping_and_Pre_Processing.gmail_auth import get_authenticated_email, load_existing_token
 
-# Authenticate Gmail API
-service = load_existing_token()
-user_email = get_authenticated_email(service)
-user_name = user_email.split("@")[0]
-
-# Connect to MongoDB
-load_dotenv()
-mongo_uri = os.getenv("MONGO_URI")
-mongo_client = pymongo.MongoClient(mongo_uri)
-db = mongo_client["User-Activity-Analysis"]
-collection = db[user_name]
+collection = None
 
 def is_meeting_rule_based(text):
     keywords = [
@@ -50,6 +42,7 @@ def is_meeting_rule_based(text):
     return match_count
 
 def process_email(y_score):
+    global collection
     email_id, prob = y_score
     text = collection.find_one({"_id": email_id}, {"body": 1}).get("body")
     heuristics = is_meeting_rule_based(text)
@@ -58,14 +51,13 @@ def process_email(y_score):
         return 1
     return 0
 
-def hybrid_predict():
+def hybrid_predict(collectionA):
+    global collection
+    collection = collectionA
     y_scores = classify_emails(collection)  #Run ML classifier
-    plot_meeting_scores(y_scores, 0.3)
+    # plot_meeting_scores(y_scores, 0.3)
     results = 0
     with ThreadPoolExecutor(max_workers=10) as executor: #Apply rule-based heuristics using multithreading
         results  = sum(executor.map(process_email, y_scores.items()))
     print(f"Categorizing using Heuristics {len(y_scores)} emails -> {results} changed...")
     print(f"✅ Email classification complete! Data updated in MongoDB.")
-
-if __name__ == "__main__":
-    hybrid_predict()

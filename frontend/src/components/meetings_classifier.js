@@ -12,21 +12,32 @@ const BASE_URL = process.env.REACT_APP_API_BASE_URL;
 
 const MeetingModel = () => {
      const [data, setData] = useState(null);
+     const [loading, setLoading] = useState(true);
+     const [error, setError] = useState(null);
      useEffect(() => {
-     axios
-          .get(`${BASE_URL}/api/meetings_classifier`)
-          .then((res) => setData(res.data))
-          .catch((err) =>
-          console.error("Error fetching meetings dashboard data:", err)
-          );
-     }, []);
+          axios
+            .get(`${BASE_URL}/api/meetings_classifier`)
+            .then((res) => {
+              setData(res.data);
+              setLoading(false);
+            })
+            .catch((err) => {
+              console.error("Error fetching meeting dashboard data:", err);
+              setError("Failed to fetch meeting dashboard data");
+              setLoading(false);
+            });
+        }, []); 
      const expandCategoryCounts = (countObj) => {
           return Object.entries(countObj).flatMap(([category, count]) =>
             Array(count).fill(category)
           );
         };
-     if (!data) return <div>Loading Meetings insights...</div>;
-     console.log(data)
+     if (loading || error) {
+          return (
+               <><div className="toast-overlay" />
+               <div className={`toast-message ${error ? "error" : "processing"}`}>{error || "Loading spam insights..."}</div></>
+          );
+     }  
      return (
           <><h2 className="page-title">Meeting Classifier - Multinomial NB</h2>
           <div className="cards-flex">

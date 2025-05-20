@@ -1,12 +1,13 @@
 import React, { useState } from 'react';
 import Logo from '../assets/Logo.jpg';
 import User from '../assets/User.jpg';
-import { ChartIcon, PersonIcon, SmileyIcon, InfoIcon, DownloadIcon, SpamIcon, MeetingIcon} from './icons.js'
+import { ChartIcon, PersonIcon, InfoIcon, DownloadIcon, SpamIcon, MeetingIcon, MLInsightsIcon} from './icons.js'
 import './CSS/dashboard.css';
-import {OverviewContent} from './overview.js'
+import OverviewContent from './overview.js'
 import CalenderApp from './calendar.js'
 import SpamModel from './spam_classifier.js';
 import MeetingModel from './meetings_classifier.js';
+import About from './about.js';
 const BASE_URL = process.env.REACT_APP_API_BASE_URL;
 
 const NavItem = ({ label, active, onClick, icon }) => {
@@ -22,7 +23,7 @@ const NavItem = ({ label, active, onClick, icon }) => {
 };
 
 const GmailAnalyticsDashboard = () => {
-  const [activeTab, setActiveTab] = useState('overview');
+  const [activeTab, setActiveTab] = useState('about');
   const [dropdownVisible, setDropdownVisible] = useState(false);
   const [userEmail, setUserEmail] = useState('example@gmail.com');
   const [loading, setLoading] = useState(null);
@@ -77,6 +78,27 @@ const GmailAnalyticsDashboard = () => {
     }setError(null); setActiveTab('overview');
   };  
   
+  async function handleExport(user_email) {
+    if (user_email === "example@gmail.com") {
+      alert("Export is disabled for this user.");
+      return;
+    }
+    const confirmSend = window.confirm("Send the Analysis direclty to your mail?");
+    if (confirmSend) {
+      try {
+        await fetch('/api/send-export-mail', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ to: user_email }),
+        });
+        alert("Mail sent successfully!");
+      } catch (error) {
+        console.error("Mail sending failed:", error);
+        alert("Failed to send mail.");
+      }
+    }
+  }
+
   return (
     <div className="dashboard-container">
       {loading && (
@@ -100,7 +122,7 @@ const GmailAnalyticsDashboard = () => {
           <img src={User} alt={User} className="user-avatar" />
           {dropdownVisible && (
             <div className="dropdown-menu">
-              <button onClick={handleLoginClick}>Login</button>
+              <button onClick={handleLoginClick } disabled={userEmail !== 'example@gmail.com'}>Login</button>
               <button onClick={handleLogoutClick} disabled={userEmail === 'example@gmail.com'}>Logout</button>
               <button disabled>Refresh</button>
             </div>
@@ -113,15 +135,21 @@ const GmailAnalyticsDashboard = () => {
           <nav>
             <div className="nav-items">
               <NavItem 
+                label="About" 
+                active={activeTab === 'about'} 
+                onClick={() => {setActiveTab('about');  setMlInsightsExpanded(false);}} 
+                icon={<InfoIcon />}
+              />
+              <NavItem 
                 label="Overview" 
                 active={activeTab === 'overview'} 
-                onClick={() => setActiveTab('overview')} 
+                onClick={() => {setActiveTab('overview');  setMlInsightsExpanded(false);}} 
                 icon={<ChartIcon />}
               />
               <NavItem 
                 label="Meetings Calendar" 
                 active={activeTab === 'meetings_calendar'} 
-                onClick={() => setActiveTab('meetings_calendar')} 
+                onClick={() => {setActiveTab('meetings_calendar'); setMlInsightsExpanded(false);}}
                 icon={<PersonIcon />}
               />
               <NavItem 
@@ -132,7 +160,7 @@ const GmailAnalyticsDashboard = () => {
                   setActiveTab('insights');
                   if (!mlInsightsExpanded) setActiveMLSubTab('spam_classifier_model');
                 }} 
-                icon={<InfoIcon />}
+                icon={<MLInsightsIcon />}
               />
               {mlInsightsExpanded && activeTab === 'insights' && (
                 <div className="sub-tabs">
@@ -150,22 +178,26 @@ const GmailAnalyticsDashboard = () => {
                   />
                 </div>
               )}
-              <NavItem 
-                label="Sentiment Trends" 
-                active={activeTab === 'sentiment_trends'} 
-                onClick={() => setActiveTab('sentiment_trends')} 
-                icon={<SmileyIcon />}
-              />
+              <div className={userEmail === "example@gmail.com" ? "closeExport" : ""}>
               <NavItem 
                 label="Export" 
                 active={activeTab === 'export'} 
-                onClick={() => setActiveTab('export')} 
+                onClick={() => {
+                  if (userEmail === "example@gmail.com") {
+                    alert("Please login first");
+                    return;
+                  }
+                  handleExport(userEmail); 
+                  setActiveTab('export'); 
+                  setMlInsightsExpanded(false);
+                }}                
                 icon={<DownloadIcon />}
-              />
+              /></div>
             </div>
           </nav>
         </aside>
         <main className="main-content">
+          {activeTab === 'about' && <About />}
           {activeTab === 'overview' && <OverviewContent />}
           {activeTab === 'meetings_calendar' && <CalenderApp />}
           {activeTab === 'insights' && (
@@ -173,10 +205,6 @@ const GmailAnalyticsDashboard = () => {
               {activeMLSubTab === 'spam_classifier_model' && <SpamModel/>}
               {activeMLSubTab === 'meeting_classifier_model' && <MeetingModel/>}
             </>
-          )}
-
-          {activeTab === 'export' && (
-            <div>Export Data</div>
           )}
         </main>
       </div>

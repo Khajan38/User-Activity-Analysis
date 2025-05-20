@@ -27,22 +27,6 @@ export const PersonIcon = () => (
   </svg>
 );
 
-export const SmileyIcon = () => (
-  <svg
-    className="nav-item-icon"
-    width="20"
-    height="20"
-    fill="currentColor"
-    viewBox="0 0 20 20"
-  >
-    <path
-      d="M10 18a8 8 0 100-16 8 8 0 000 16zM7 9a1 1 0 100-2 1 1 0 000 2zm7-1a1 1 0 11-2 0 1 1 0 012 0zm-.464 5.535a1 1 0 10-1.415-1.414 3 3 0 01-4.242 0 1 1 0 00-1.415 1.414 5 5 0 007.072 0z"
-      clipRule="evenodd"
-      fillRule="evenodd"
-    ></path>
-  </svg>
-);
-
 export const InfoIcon = () => (
   <svg
     className="nav-item-icon"
@@ -96,5 +80,17 @@ export const MeetingIcon = () => (
     viewBox="0 0 24 24"
   >
     <path d="M19 3h-1V1h-2v2H8V1H6v2H5a2 2 0 00-2 2v14a2 2 0 002 2h7v-2H5V9h14v1.26c.71.39 1.37.9 2 1.51V5a2 2 0 00-2-2zM5 7V5h14v2H5zm14.5 5a5.5 5.5 0 100 11 5.5 5.5 0 000-11zm.5 3h-2v3.25l2.25 1.35.75-1.23-1.5-.87V15z" />
+  </svg>
+);
+
+export const MLInsightsIcon = () => (
+  <svg
+    className="nav-item-icon"
+    width="20"
+    height="20"
+    fill="currentColor"
+    viewBox="0 0 24 24"
+  >
+    <path d="M6 12a2 2 0 11-2-2 2 2 0 012 2zm12 0a2 2 0 112-2 2 2 0 01-2 2zm-6 8a2 2 0 112-2 2 2 0 01-2 2zm0-16a2 2 0 112-2 2 2 0 01-2 2zm5.66 10.24l-2.12 1.22a4.72 4.72 0 01-.92.39l.64 2.39a1 1 0 01-1.92.52l-.64-2.39a4.65 4.65 0 01-.9 0l-.64 2.39a1 1 0 01-1.92-.52l.64-2.39a4.72 4.72 0 01-.92-.39l-2.12-1.22a1 1 0 01.96-1.76l2.12 1.22a2.7 2.7 0 002.56 0l2.12-1.22a1 1 0 11.96 1.76zm-5.66-2.24a2 2 0 110-4 2 2 0 010 4z" />
   </svg>
 );

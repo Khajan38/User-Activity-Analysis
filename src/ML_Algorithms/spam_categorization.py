@@ -1,40 +1,30 @@
-import os
+#Root Directory in System Path
+import sys, os
+root_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '../../'))
+if root_path not in sys.path:
+    sys.path.append(root_path)
+
 import pickle
-import pymongo
-from dotenv import load_dotenv
-from src.Data_Scrapping_and_Pre_Processing.gmail_auth import get_authenticated_email, load_existing_token
-
-# Authenticate Gmail API
-service = load_existing_token()
-user_email = get_authenticated_email(service)
-user_name = user_email.split("@")[0]
-
-# Connect to MongoDB
-load_dotenv()
-mongo_uri = os.getenv("MONGO_URI")
-mongo_client = pymongo.MongoClient(mongo_uri)
-db = mongo_client["User-Activity-Analysis"]
-collection = db[user_name]
 
 # Load the trained model and vectorizer
-with open("../../dependencies/spam_NB.pkl", "rb") as model_file:
+with open("dependencies/spam_NB.pkl", "rb") as model_file:
     classifier = pickle.load(model_file)
-with open("../../dependencies/spam_vectorizer.pkl", "rb") as vectorizer_file:
+with open("dependencies/spam_vectorizer.pkl", "rb") as vectorizer_file:
     vectorizer = pickle.load(vectorizer_file)
 
-def classify_emails():
+def classify_emails(collection):
     emails = list(collection.find({"spam_category": {"$exists": False}}))
     print("Categorizing", len(emails), "emails...")
+    y_score, index = {}, classifier.classMap["spam"]
     for email in emails:
         email_id = email["_id"]
         text = email.get("subject", "") + " " + email.get("body", "")
         text_vector = vectorizer.transform([text]).toarray()
         predicted_category = classifier.predict(text_vector)[0]
+        if predicted_category == "ham": y_score[email_id] = classifier.getPredictedScores()[0][index]
         collection.update_one(
             {"_id": email_id},
             {"$set": {"spam_category": predicted_category}}
         )
     print("✅ Email classification complete! Data updated in MongoDB.")
-
-if __name__ == "__main__":
-    classify_emails()
+    return y_score

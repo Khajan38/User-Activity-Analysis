@@ -9,7 +9,7 @@ import pandas as pd
 from sklearn.model_selection import train_test_split
 from src.ML_Algorithms.Implemented_Algos.TF_IDF import TfidfVectorizer
 from src.ML_Algorithms.Implemented_Algos.Naive_Bayes_Classifier import MultinomialNB
-from src.UI_Requirements.model_dashboard import plotDataset, plotConfusionMatrix, plotROCCurve, plotProbabilitiesWithThresholds
+from test.model_dashboard import plotDataset, plotConfusionMatrix, plotROCCurve, plotProbabilitiesWithThresholds
 from src.Data_Scrapping_and_Pre_Processing.pre_processing import preprocess_dataFrame
 
 df = pd.read_csv("dependencies/emails_dataset.csv") #Data Frame for Testing Database

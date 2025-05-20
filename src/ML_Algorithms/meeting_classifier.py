@@ -6,10 +6,10 @@ if root_path not in sys.path:
 
 import pickle
 import pandas as pd
-from Implemented_Algos.TF_IDF import TfidfVectorizer
 from sklearn.model_selection import train_test_split
+from src.ML_Algorithms.Implemented_Algos.TF_IDF import TfidfVectorizer
 from src.ML_Algorithms.Implemented_Algos.Naive_Bayes_Classifier import MultinomialNB
-from src.UI_Requirements.model_dashboard import plotDataset, plotConfusionMatrix, plotROCCurve, plotProbabilitiesWithThresholds
+from test.model_dashboard import plotDataset, plotConfusionMatrix, plotROCCurve, plotProbabilitiesWithThresholds
 from src.Data_Scrapping_and_Pre_Processing.pre_processing import preprocess_dataFrame
 
 df = pd.read_csv("dependencies/meetings_dataset.csv") #Data Frame for Testing Database
@@ -34,7 +34,6 @@ y_score = classifier.getPredictedScores()
 plotROCCurve(y_test, y_score, classifier.classMap)
 print(f"✅ Model Accuracy: {accuracy * 100:.2f}%")
 plotProbabilitiesWithThresholds(y_test, y_pred, y_score, classifier.classMap, best_thresholds)
-plotProbabilitiesWithThresholds(y_test, y_pred, y_score, classifier.classMap, best_thresholds) #Gives Best Threshold
 
 #Save model & vectorizer
 with open("dependencies/meetings_NB.pkl", "wb") as model_file:

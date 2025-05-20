@@ -6,13 +6,9 @@ import ipywidgets as widgets
 from dotenv import load_dotenv
 import matplotlib.pyplot as plt
 from IPython.display import display
-from src.Data_Scrapping_and_Pre_Processing.gmail_auth import get_authenticated_email, load_existing_token
 from model_dashboard import plotDataset
 
-# Authenticate Gmail API
-service = load_existing_token()
-user_email = get_authenticated_email(service)
-user_name = user_email.split("@")[0]
+user_name = "tanujbhatt8279"
 
 # Connect to MongoDB
 load_dotenv()

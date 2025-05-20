@@ -67,13 +67,23 @@ export function CreateMeetingModal({ onClose, onSave, selectedDate, startTime, e
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(meetingData),
       });
+      console.log("Sent the data to backend...")
       const result = await response.json();
+      console.log("Received the data to backend...", result)
       const updatedMeeting = { ...meetingData, id: result._id };
-      onSave((prevMeetings) =>
-        prevMeetings.map((meeting) =>
-          meeting.id === meetingData.id ? updatedMeeting : meeting
-        )
-      );
+      console.log("Updated Meeting : ", updatedMeeting)
+      onSave((prevMeetings) => {
+        const exists = prevMeetings.some(meeting => meeting.id === meetingData.id);
+        if (exists) {
+          console.log("Meeting was previously pushed...")
+          return prevMeetings.map(meeting =>
+            meeting.id === meetingData.id ? updatedMeeting : meeting
+          );
+        } else {
+          console.log("Meeting was not previously pushed...")
+          return [...prevMeetings, updatedMeeting];
+        }
+      });
       onClose();
     } catch (error) {
       console.error("Error saving meeting:", error);
@@ -88,11 +98,10 @@ export function CreateMeetingModal({ onClose, onSave, selectedDate, startTime, e
   };
 
   const colorOptions = [
+    { id: 'red', label: 'Red' },
+    { id: 'orange', label: 'Orange' },
     { id: 'blue', label: 'Blue' },
     { id: 'green', label: 'Green' },
-    { id: 'purple', label: 'Purple' },
-    { id: 'red', label: 'Red' },
-    { id: 'orange', label: 'Orange' }
   ];
 
   return (
