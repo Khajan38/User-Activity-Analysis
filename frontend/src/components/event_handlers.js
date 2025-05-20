@@ -6,16 +6,19 @@ const BASE_URL = process.env.REACT_APP_API_BASE_URL;
 
 export function ContextMenu({ visible, x, y, meeting, onAction, onClose }) {
   if (!visible) return null;
+  
+  const handleAction = (action) => {
+    onAction(action, meeting);
+    onClose();
+  };
+  
   return (
     <div className="context-menu" style={{top: y, left: x}}>
       {["View", "Edit", "Delete"].map((action, index) => (
         <div
           key={action}
           className={`context-button btn-${index}`}
-          onClick={() => {
-            alert(`${action} clicked for ${meeting.title}`);
-            onClose();
-          }}
+          onClick={() => handleAction(action.toLowerCase())}
         >
           {action[0]}
         </div>
@@ -24,19 +27,65 @@ export function ContextMenu({ visible, x, y, meeting, onAction, onClose }) {
   );
 }
 
-export function CreateMeetingModal({ onClose, onSave, selectedDate, startTime, endTime }) {
-  const [meetingData, setMeetingData] = useState({
-    id: uuidv4() || 0,
-    title: '',
-    date: selectedDate,
-    startTime: startTime,
-    endTime: endTime,
-    color: 'blue',
-    description: '',
-    attendees: []
-  });
+export function ViewMeetingModal({ meeting, onClose }) {
+  return (
+    <div className="modal-overlay">
+      <div className="modal">
+        <div className="modal-header">
+          <h2>View Meeting</h2>
+          <button className="close-button" onClick={onClose}>×</button>
+        </div>
+        <div className="modal-content">
+          <div className="meeting-details">
+            <h3 className={`meeting-title ${meeting.color}`}>{meeting.title}</h3>
+            <div className="meeting-info">
+              <p><strong>Date:</strong> {meeting.date instanceof Date ? 
+                meeting.date.toLocaleDateString() : 
+                new Date(meeting.date).toLocaleDateString()}</p>
+              <p><strong>Time:</strong> {meeting.startTime} - {meeting.endTime}</p>
+              {meeting.description && (
+                <div className="meeting-description">
+                  <p><strong>Description:</strong></p>
+                  <p>{meeting.description}</p>
+                </div>
+              )}
+              {meeting.attendees && meeting.attendees.length > 0 && (
+                <div className="meeting-attendees">
+                  <p><strong>Attendees:</strong></p>
+                  <ul>
+                    {meeting.attendees.map((attendee, index) => (
+                      <li key={index}>{attendee}</li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+            </div>
+          </div>
+          <div className="form-actions">
+            <button type="button" onClick={onClose} className="close-button">Close</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export function CreateMeetingModal({ onClose, onSave, selectedDate, startTime, endTime, existingMeeting = null }) {
+  const [meetingData, setMeetingData] = useState(
+    existingMeeting || {
+      id: uuidv4() || 0,
+      title: '',
+      date: selectedDate,
+      startTime: startTime,
+      endTime: endTime,
+      color: 'blue',
+      description: '',
+      attendees: []
+    }
+  );
 
   const [attendeeInput, setAttendeeInput] = useState('');
+  const isEditing = !!existingMeeting;
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -62,8 +111,13 @@ export function CreateMeetingModal({ onClose, onSave, selectedDate, startTime, e
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await fetch(`${BASE_URL}/api/meetings`, {
-        method: "POST",
+      const method = isEditing ? "PUT" : "POST";
+      const url = isEditing 
+        ? `${BASE_URL}/api/meetings/${meetingData.id}`
+        : `${BASE_URL}/api/meetings`;
+        
+      const response = await fetch(url, {
+        method: method,
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(meetingData),
       });
@@ -86,8 +140,8 @@ export function CreateMeetingModal({ onClose, onSave, selectedDate, startTime, e
       });
       onClose();
     } catch (error) {
-      console.error("Error saving meeting:", error);
-      alert("Failed to save meeting to server.");
+      console.error(`Error ${isEditing ? 'updating' : 'saving'} meeting:`, error);
+      alert(`Failed to ${isEditing ? 'update' : 'save'} meeting to server.`);
     }
   };  
 
@@ -108,7 +162,7 @@ export function CreateMeetingModal({ onClose, onSave, selectedDate, startTime, e
     <div className="modal-overlay">
       <div className="modal">
         <div className="modal-header">
-          <h2>Create Meeting</h2>
+          <h2>{isEditing ? 'Edit Meeting' : 'Create Meeting'}</h2>
           <button className="close-button" onClick={onClose}>×</button>
         </div>
         <div className="modal-content">
@@ -131,7 +185,7 @@ export function CreateMeetingModal({ onClose, onSave, selectedDate, startTime, e
                 <input
                   type="date"
                   name="date"
-                  value={meetingData.date.toISOString().split('T')[0]}
+                  value={dateValue}
                   onChange={(e) =>
                     setMeetingData({
                       ...meetingData,
@@ -214,9 +268,42 @@ export function CreateMeetingModal({ onClose, onSave, selectedDate, startTime, e
             </div>
             <div className="form-actions">
               <button type="button" onClick={onClose} className="cancel-button">Cancel</button>
-              <button type="submit" className="save-button">Save</button>
+              <button type="submit" className="save-button">{isEditing ? 'Update' : 'Save'}</button>
             </div>
           </form>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export function DeleteMeetingConfirmation({ meeting, onClose, onConfirm }) {
+  const handleDelete = async () => {
+    try {
+      await fetch(`${BASE_URL}/api/meetings/${meeting.id}`, {
+        method: "DELETE",
+      });
+      onConfirm(meeting.id);
+      onClose();
+    } catch (error) {
+      console.error("Error deleting meeting:", error);
+      alert("Failed to delete meeting from server.");
+    }
+  };
+
+  return (
+    <div className="modal-overlay">
+      <div className="modal delete-modal">
+        <div className="modal-header">
+          <h2>Delete Meeting</h2>
+          <button className="close-button" onClick={onClose}>×</button>
+        </div>
+        <div className="modal-content">
+          <p>Are you sure you want to delete the meeting "{meeting.title}"?</p>
+          <div className="form-actions">
+            <button type="button" onClick={onClose} className="cancel-button">Cancel</button>
+            <button type="button" onClick={handleDelete} className="delete-button">Delete</button>
+          </div>
         </div>
       </div>
     </div>
