@@ -9,7 +9,7 @@ export default function ConfusionMatrix({ matrix, labels, accuracy }) {
         [0, "rgba(179, 229, 252, 0.7)"], // Light blue
         [0.5, "rgba(33, 150, 243, 0.7)"],  // Medium blue
         [0.7, "rgba(0, 121, 191, 0.7)"],   // Dark blue
-        [1, "rgba(0, 72, 128, 0.7)"],  // Very dark blue (high value)
+        [1, "rgba(0, 72, 128, 0.7)"],  //  dark blue (high value of color )
       ],
       text: matrix.map(row => row.map(value => value.toString())),
       texttemplate: "%{text}",
