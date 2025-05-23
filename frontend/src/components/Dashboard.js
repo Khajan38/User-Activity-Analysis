@@ -50,7 +50,7 @@ const GmailAnalyticsDashboard = () => {
         setLoading(null);
       }
     } catch (error) {
-      console.error('Error during login:', error);
+      console.error('Error occured during login:', error);
       setError("Error during Login");
     }setLoading(null); setActiveTab('overview');
   };
