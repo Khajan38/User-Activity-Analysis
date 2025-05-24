@@ -1,3 +1,4 @@
+/*About Section Component for COGNITICK.AI*/
 import React from 'react';
 import './CSS/about.css';
 
