@@ -1,3 +1,4 @@
+/* EVENT HANDLERS FOR MEETING MANAGMENNT COMPONENTS */
 import { v4 as uuidv4 } from 'uuid';
 import './CSS/meeting_window.css';
 import './CSS/meeting_extensions.css';
