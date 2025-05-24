@@ -10,7 +10,7 @@
   height: 80px;
   pointer-events: auto;
 }
-
+/* context button styling */
 .context-button {
   position: absolute;
   width: 40px;
