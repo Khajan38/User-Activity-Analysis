@@ -1,3 +1,4 @@
+/* CALENDAR COMPONENTS */
 import React, { useState } from 'react';
 import { ContextMenu, CreateMeetingModal } from "./event_handlers";
 
