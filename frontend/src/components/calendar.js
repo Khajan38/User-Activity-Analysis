@@ -1,3 +1,4 @@
+/*Calendar App Component*/
 import React, { useState } from 'react';
 import './CSS/calendar.css';
 import './CSS/month_view.css';
