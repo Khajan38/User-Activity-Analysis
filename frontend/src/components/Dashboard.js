@@ -1,3 +1,4 @@
+/* User activity analysis dashboard*/
 import React, { useState } from 'react';
 import Logo from '../assets/Logo.jpg';
 import User from '../assets/User.jpg';
