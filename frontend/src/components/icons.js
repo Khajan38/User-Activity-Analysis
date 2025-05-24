@@ -1,3 +1,4 @@
+/* SVG ICONS */
 export const ChartIcon = () => (
   <svg
     className="nav-item-icon"
